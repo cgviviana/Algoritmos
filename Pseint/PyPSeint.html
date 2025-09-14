@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lección: ¿Qué es un algoritmo?</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <header>
+    <h1>🧠 Lección: ¿Qué es un algoritmo?</h1>
+    <p>Aprende cómo dar instrucciones paso a paso a la computadora</p>
+  </header>
+
+  <main class="contenedor">
+
+    <!-- Sección de explicación -->
+    <section class="explicacion">
+      <h2>📚 ¿Qué es un algoritmo?</h2>
+      <p>Un <strong>algoritmo</strong> es una secuencia <u>finita</u> y ordenada de pasos que resuelven un problema.</p>
+      <p>En pseudocódigo, un algoritmo comienza con <code>Inicio</code> y termina con <code>Fin</code>.</p>
+      <p>Usamos la instrucción <code>Escribir</code> para mostrar mensajes en pantalla.</p>
+
+      <div class="ejemplo">
+        <h3>🧪 Ejemplo:</h3>
+        <pre>
+Inicio
+Escribir "Tomar el cepillo"
+Escribir "Aplicar pasta"
+Escribir "Cepillar los dientes"
+Fin
+        </pre>
+      </div>
+
+      <h3>🎯 Tu reto:</h3>
+      <ul>
+        <li>Debe comenzar con <code>Inicio</code> y terminar con <code>Fin</code></li>
+        <li>Usa <code>Escribir</code> al menos 3 veces</li>
+        <li>Los pasos deben estar en orden</li>
+      </ul>
+    </section>
+
+    <!-- Sección para escribir código -->
+    <section class="editor">
+      <h2>✍️ Escribe tu pseudocódigo:</h2>
+      <textarea id="codigo" placeholder="// Escribe tu algoritmo aquí..."></textarea>
+      <button onclick="simular()">▶ Ejecutar</button>
+    </section>
+
+    <!-- Resultado simulado -->
+    <section class="resultado">
+      <h2>📺 Resultado en pantalla:</h2>
+      <div id="output"></div>
+      <p id="feedback"></p>
+    </section>
+
+  </main>
+
+  <script src="juego.js"></script>
+</body>
+</html>
