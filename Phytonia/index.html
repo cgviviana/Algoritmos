@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>AndinaCodeX - Nivel 1: Comunicación Estelar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🪐 AndinaCodeX: Ciudad Pythonia</h1>
+      <h2>Nivel 1: Comunicación Estelar</h2>
+    </header>
+
+    <main>
+      <div class="left-panel">
+        <div id="theory">
+          <!-- Aquí va la teoría cargada por el JS -->
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div id="instructions">
+          <!-- Aquí va la instrucción cargada por el JS -->
+        </div>
+
+        <textarea id="codeInput" placeholder="Escribe tu código aquí..."></textarea>
+        <button onclick="checkCode()">Ejecutar</button>
+
+        <div id="output">
+          <!-- Resultado visible del código -->
+        </div>
+
+        <div id="feedback">
+          <!-- Comentario tipo: ¡Ganaste 10 XP! o Revisa tu código -->
+        </div>
+
+        <button id="nextBtn" onclick="nextChallenge()">Siguiente reto</button>
+      </div>
+    </main>
+
+    <footer>
+      <p>Desarrollado en la galaxia de AndinaCodeX 🌌</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
