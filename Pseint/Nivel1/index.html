@@ -3,56 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pseintia - Nivel 1 · Exploradores</title>
+  <title>PSeInt-IX - Nivel 1 · Exploradores</title>
   <style>
     :root{ --ink:#eaf2ff; --neon:#22c55e; --muted:#2a3b66; }
-    *{ box-sizing:border-box }
+    *{ box-sizing:border-box; }
     body{
       margin:0; min-height:100vh; display:flex; flex-direction:column;
       font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif; color:var(--ink);
-      background: radial-gradient(1100px 560px at 50% -180px,#142a58 38%,#050913 70%);
+      background:#050913; position:relative; overflow:hidden;
     }
+    canvas#stars{ position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
     header{
       text-align:center; padding:14px 16px; background:#162543; border-bottom:3px solid var(--neon);
       box-shadow:0 0 16px rgba(34,197,94,.6);
     }
     header h1{ margin:0; font-size:1.9rem; letter-spacing:.3px }
-    #wrap{ flex:1; display:flex; gap:22px; max-width:1200px; margin:22px auto; padding:0 14px }
+    #wrap{ flex:1; display:flex; gap:22px; max-width:1200px; margin:22px auto; padding:0 14px; }
     #book,#play{
       flex:1; border:2px solid var(--neon); border-radius:14px; padding:20px;
       background:linear-gradient(180deg,rgba(22,34,66,.95),rgba(10,20,38,.92));
-      box-shadow:0 0 18px rgba(34,197,94,.45); overflow:auto; max-height:calc(100vh - 170px)
+      box-shadow:0 0 18px rgba(34,197,94,.45); overflow:auto; max-height:calc(100vh - 170px);
     }
-    h3{ margin:.2rem 0 1rem 0 }
+    h3{ margin:.2rem 0 1rem 0; }
     .badge{ display:inline-block; padding:4px 10px; border:1px solid var(--neon); border-radius:999px; font-size:.85rem }
-    .section-title{ display:flex; align-items:center; gap:10px }
-    .progressbar{ width:100%; background:var(--muted); height:14px; border-radius:8px; overflow:hidden; margin:.6rem 0 0 0 }
-    .progress{ height:100%; width:0%; background:var(--neon); transition:width .25s ease }
-    .block{ background:#0f1e3a; border:1px solid #254075; border-radius:12px; padding:14px 16px; margin-bottom:12px }
-    .block h4{ margin:.2rem 0 .5rem 0 }
-    .city{ background:#0c1833; border:1px dashed #2e4a88 }
-    .hint{ opacity:.9; margin:-6px 0 10px 0 }
-    .card{ background:#0b1630; border:1px solid #203b70; border-radius:12px; padding:14px 16px }
-    .choices{ display:flex; flex-direction:column; gap:8px }
+    .section-title{ display:flex; align-items:center; gap:10px; }
+    .progressbar{ width:100%; background:var(--muted); height:14px; border-radius:8px; overflow:hidden; margin:.6rem 0; }
+    .progress{ height:100%; width:0%; background:var(--neon); transition:width .25s ease; }
+    .block{ background:#0f1e3a; border:1px solid #254075; border-radius:12px; padding:14px 16px; margin-bottom:12px; }
+    .block h4{ margin:.2rem 0 .5rem 0; }
+    .city{ background:#0c1833; border:1px dashed #2e4a88; }
+    .hint{ opacity:.9; margin:-6px 0 10px 0; }
+    .card{ background:#0b1630; border:1px solid #203b70; border-radius:12px; padding:14px 16px; }
+    .choices{ display:flex; flex-direction:column; gap:8px; }
     button.choice{
       background:var(--neon); color:#072317; border:none; border-radius:10px;
-      padding:10px 12px; font-weight:700; text-align:left; cursor:pointer
+      padding:10px 12px; font-weight:700; text-align:left; cursor:pointer;
     }
-    button.choice:hover{ filter:brightness(1.05) }
-    .msg{ margin-top:8px }
+    button.choice:hover{ filter:brightness(1.05); }
+    .msg{ margin-top:8px; }
     footer{
       text-align:center; padding:10px 14px; background:#0d1324; border-top:2px solid var(--neon);
-      color:#aeb9d6; font-size:.95rem
+      color:#aeb9d6; font-size:.95rem;
+    }
+    #overlay{
+      position:fixed; top:0; left:0; right:0; bottom:0; background:#050913dd;
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      z-index:10; color:white; text-align:center;
+    }
+    #overlay input{
+      padding:10px; border-radius:8px; border:none; margin-top:10px; font-size:1rem;
+    }
+    #overlay button{
+      margin-top:12px; padding:10px 16px; border:none; border-radius:8px;
+      background:var(--neon); color:#04150f; font-weight:700; cursor:pointer;
     }
   </style>
 </head>
 <body>
+  <canvas id="stars"></canvas>
+
+  <div id="overlay">
+    <h2>🌌 Bienvenido a PSeInt-iX</h2>
+    <p>Ingresa tu nombre completo para comenzar la aventura:</p>
+    <input type="text" id="playerName" placeholder="Tu nombre completo" />
+    <button onclick="startGame()">Comenzar</button>
+  </div>
+
   <header>
-    <h1>🌌 Pseintia — Nivel 1 · Exploradores</h1>
+    <h1>🌌 PSeInt-iX — Nivel 1 · Exploradores</h1>
   </header>
 
-  <main id="wrap">
-    <!-- 📖 LIBRO DE LA SABIDURÍA -->
+  <main id="wrap" style="display:none">
+    <!-- 📖 LIBRO -->
     <section id="book" aria-live="polite">
       <div class="section-title">
         <h3>📖 Libro de la Sabiduría</h3>
@@ -60,7 +82,6 @@
       </div>
       <h3 id="title">🏛️ Plaza Algoritmia</h3>
       <div id="theory"></div>
-
       <div class="progressbar"><div class="progress" id="pbar"></div></div>
       <p><b>Progreso de la lección:</b> <span id="ptext">0/10</span></p>
     </section>
@@ -68,7 +89,7 @@
     <!-- 🎮 RETOS -->
     <section id="play" aria-live="polite">
       <div class="section-title"><h3>🎮 Retos</h3></div>
-      <p class="hint"><em>Instrucción:</em> Selecciona la <b>opción correcta</b> para avanzar. Las respuestas se mezclan en cada intento.</p>
+      <p class="hint"><em>Instrucción:</em> Selecciona la <b>opción correcta</b> para avanzar.</p>
       <h3 id="ctitle">Reto 1</h3>
       <div id="challenge"></div>
     </section>
@@ -77,445 +98,154 @@
   <footer>Aprendiendo con @LaProfeVivy ✨</footer>
 
   <script>
-    // ---------- TEORÍA (concepto + caso de ciudad) ----------
-    const Theory = {
-      plaza: `
-        <div class="block">
-          <h4>🧠 ¿Qué es un algoritmo?</h4>
-          <ul>
-            <li>Conjunto <b>finito</b> de pasos ordenados para resolver un problema.</li>
-            <li><b>Características:</b> claridad, orden, finitud, entradas/salidas, generalidad.</li>
-            <li><b>Representaciones:</b> texto, diagrama de flujo y <b>pseudocódigo</b>.</li>
-          </ul>
-        </div>
-        <div class="block city">
-          <h4>🏛️ Caso: Plaza Algoritmia</h4>
-          <p>Las baldosas digitales se encienden solo si los pasos están en orden. Drones y robots se
-          confundieron; reordena procesos para restaurar el corazón de Pseintia.</p>
-        </div>
-      `,
-      parque: `
-        <div class="block">
-          <h4>🧠 Variables y tipos</h4>
-          <ul>
-            <li>Una <b>variable</b> guarda información que puede cambiar.</li>
-            <li>Tipos: <b>numérico</b>, <b>texto</b> y <b>lógico</b> (verdadero/falso).</li>
-            <li>Buenos nombres: sin espacios, claros y coherentes.</li>
-          </ul>
-        </div>
-        <div class="block city">
-          <h4>🌱 Caso: Parque de Variables</h4>
-          <p>Árboles luminosos almacenan datos en hojas digitales. Sin valores, el parque queda a oscuras.
-          Asigna e interpreta variables para devolverles la luz.</p>
-        </div>
-      `,
-      taller: `
-        <div class="block">
-          <h4>🧠 Operaciones</h4>
-          <ul>
-            <li>Aritméticos: +, −, ×, ÷, % (módulo).</li>
-            <li>Relacionales: &gt;, &lt;, ==, !=, &gt;=, &lt;= (devuelven verdadero/falso).</li>
-            <li>Lógicos: Y, O, NO. Usa <b>paréntesis</b> para aclarar precedencia.</li>
-            <li>Concatenación de texto para formar mensajes.</li>
-          </ul>
-        </div>
-        <div class="block city">
-          <h4>⚙️ Caso: Taller de Operatoria</h4>
-          <p>Las máquinas convierten cálculos en energía. Si una operación falla, una zona de Pseintia se apaga.
-          Actívalas resolviendo operaciones correctas.</p>
-        </div>
-      `,
-      barrio: `
-        <div class="block">
-          <h4>🧠 Secuencias de instrucciones</h4>
-          <ul>
-            <li>Las instrucciones se ejecutan <b>en orden</b>.</li>
-            <li>El resultado <b>depende</b> del orden (antes/después).</li>
-            <li>En pseudocódigo: escribir paso a paso (<i>Leer</i>, <i>Escribir</i>, etc.).</li>
-          </ul>
-        </div>
-        <div class="block city">
-          <h4>🏘️ Caso: Barrio Secuencial</h4>
-          <p>Reprograma rutas de robots, semáforos y portones para que el barrio vuelva a fluir.</p>
-        </div>
-      `
+    // ================= ESTRELLAS FONDO =================
+    const canvas=document.getElementById("stars"),ctx=canvas.getContext("2d");
+    let w,h,stars=[];
+    function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
+    window.addEventListener("resize",resize); resize();
+    function initStars(){
+      stars=[];
+      for(let i=0;i<150;i++){
+        stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*2+1,dx:(Math.random()-0.5)*0.2,dy:(Math.random()-0.5)*0.2});
+      }
+    }
+    initStars();
+    let shooting={x:0,y:0,len:0,active:false};
+    function animate(){
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle="white";
+      stars.forEach(s=>{
+        s.x+=s.dx; s.y+=s.dy;
+        if(s.x<0||s.x>w) s.dx*=-1;
+        if(s.y<0||s.y>h) s.dy*=-1;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+      });
+      if(shooting.active){
+        ctx.strokeStyle="white"; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(shooting.x,shooting.y);
+        ctx.lineTo(shooting.x+shooting.len,shooting.y+shooting.len*0.3); ctx.stroke();
+        shooting.x+=10; shooting.y+=3;
+        if(shooting.x> w || shooting.y>h) shooting.active=false;
+      }else if(Math.random()<0.002){
+        shooting={x:Math.random()*w*0.5,y:Math.random()*h*0.3,len:80,active:true};
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ================== TEORÍA ==================
+    const Theory={
+      plaza:`<div class="block"><h4>🧠 Algoritmos</h4><p>Un algoritmo es un conjunto finito de pasos ordenados para resolver un problema. Deben ser claros, finitos (inicio y fin) y ordenados.</p></div>
+             <div class="block city"><h4>🏛️ Plaza Algoritmia</h4><p>El tablero digital que reporta el funcionamiento solo se enciende si los pasos están en orden. Rescata la plaza corrigiendo procesos.</p></div>`,
+      parque:`<div class="block"><h4>🧠 Variables</h4><p>Una variable guarda datos. Tipos: numérico, texto (entre comillas), lógico (Verdadero/Falso). Buenos nombres son descriptivos, sin espacios y comenzando en letra.</p></div>
+             <div class="block city"><h4>🌱 Parque de Variables</h4><p>Los árboles luminosos guardan valores. A veces estos valores y variables se pueden unir (concatenar +) conservando la norma. Sin variables correctas, el parque se apaga.</p></div>`,
+      taller:`<div class="block"><h4>🧠 Operaciones</h4><p>Operadores: +, −, ×, ÷, %, relacionales (>,<,==) y lógicos (Y, O, NO). La prioridad se aclara con paréntesis.</p></div>
+              <div class="block city"><h4>⚙️ Taller de Operatoria</h4><p>Máquinas que convierten cálculos en energía. Si se equivoca la operación, fallan.</p></div>`,
+      barrio:`<div class="block"><h4>🧠 Secuencias</h4><p>Las instrucciones se ejecutan en orden. El resultado depende del orden exacto.</p></div>
+              <div class="block city"><h4>🏘️ Barrio Secuencial</h4><p>Robots, semáforos y portones necesitan instrucciones correctas para fluir.</p></div>`
     };
 
-    // ---------- LECCIONES Y RETOS (40 en total) ----------
+    // ================= LECCIONES Y RETOS =================
     const Lessons = [
-      { // 1) Plaza Algoritmia
+      {
         badge:"Lección 1/4", title:"🏛️ Plaza Algoritmia", theory:Theory.plaza,
         retos:[
-          {q:"Camino roto: ¿qué orden permite que el dron cruce la plaza?",
-            options:[
-              {t:"Avanzar → Girar → Avanzar → Llegar", ok:true},
-              {t:"Girar → Avanzar → Llegar → Avanzar", ok:false},
-              {t:"Llegar → Avanzar → Girar → Avanzar", ok:false},
-              {t:"Avanzar → Llegar → Girar → Avanzar", ok:false}
-            ]},
-          {q:"Fuente central: orden correcto para encenderla",
-            options:[
-              {t:"Encender bomba → Abrir válvula → Activar luces", ok:true},
-              {t:"Activar luces → Abrir válvula → Encender bomba", ok:false},
-              {t:"Abrir válvula → Encender bomba → Activar luces", ok:false},
-              {t:"Encender bomba → Activar luces → Abrir válvula", ok:false}
-            ]},
-          {q:"Tranvía eléctrico: secuencia válida",
-            options:[
-              {t:"Abrir puertas → Subir pasajeros → Cerrar puertas → Arrancar", ok:true},
-              {t:"Cerrar puertas → Arrancar → Abrir puertas → Subir pasajeros", ok:false},
-              {t:"Subir pasajeros → Cerrar puertas → Arrancar → Abrir puertas", ok:false},
-              {t:"Abrir puertas → Cerrar puertas → Subir pasajeros → Arrancar", ok:false}
-            ]},
-          {q:"Kiosko automático: preparar un jugo",
-            options:[
-              {t:"Recibir pedido → Tomar vaso → Llenar vaso → Entregar", ok:true},
-              {t:"Tomar vaso → Entregar → Recibir pedido → Llenar vaso", ok:false},
-              {t:"Recibir pedido → Llenar vaso → Tomar vaso → Entregar", ok:false},
-              {t:"Recibir pedido → Entregar → Tomar vaso → Llenar vaso", ok:false}
-            ]},
-          {q:"Dron guía turístico: ruta mínima",
-            options:[
-              {t:"Ir recto → Girar → Llegar a torre", ok:true},
-              {t:"Girar → Llegar a torre → Ir recto", ok:false},
-              {t:"Llegar a torre → Ir recto → Girar", ok:false},
-              {t:"Girar → Ir recto → Llegar a torre", ok:false}
-            ]},
-          {q:"Escaleras holográficas: sincronización",
-            options:[
-              {t:"Encender holograma → Proyectar escalones → Asegurar pasamanos", ok:true},
-              {t:"Proyectar escalones → Asegurar pasamanos → Encender holograma", ok:false},
-              {t:"Asegurar pasamanos → Encender holograma → Proyectar escalones", ok:false},
-              {t:"Proyectar escalones → Encender holograma → Asegurar pasamanos", ok:false}
-            ]},
-          {q:"Patrulla robótica: ronda correcta",
-            options:[
-              {t:"Norte → Este → Sur → Oeste", ok:true},
-              {t:"Oeste → Sur → Este → Norte", ok:false},
-              {t:"Este → Norte → Oeste → Sur", ok:false},
-              {t:"Norte → Sur → Este → Oeste", ok:false}
-            ]},
-          {q:"Robot de limpieza: orden adecuado",
-            options:[
-              {t:"Encender agua → Barrer → Aspirar → Secar", ok:true},
-              {t:"Barrer → Secar → Encender agua → Aspirar", ok:false},
-              {t:"Aspirar → Encender agua → Barrer → Secar", ok:false},
-              {t:"Secar → Barrer → Aspirar → Encender agua", ok:false}
-            ]},
-          {q:"Pantalla informativa: mensajes en secuencia",
-            options:[
-              {t:"Bienvenido → Nombre del visitante → Mensaje final", ok:true},
-              {t:"Nombre del visitante → Bienvenido → Mensaje final", ok:false},
-              {t:"Mensaje final → Bienvenido → Nombre", ok:false},
-              {t:"Bienvenido → Mensaje final → Nombre", ok:false}
-            ]},
-          {q:"Escudo de la Plaza: arranque seguro",
-            options:[
-              {t:"Iniciar → Verificar sensores → Cargar energía → Activar núcleo → Desplegar escudo", ok:true},
-              {t:"Cargar energía → Iniciar → Activar núcleo → Verificar sensores → Desplegar escudo", ok:false},
-              {t:"Verificar sensores → Desplegar escudo → Activar núcleo → Cargar energía → Iniciar", ok:false},
-              {t:"Iniciar → Cargar energía → Desplegar escudo → Verificar sensores → Activar núcleo", ok:false}
-            ]}
+          {q:"¿Cuál es el orden correcto para que un dron cruce la plaza?",options:[{t:"Iniciar → Avanzar → Llegar",ok:true},{t:"Girar → Avanzar → Llegar ",ok:false},{t:"Llegar → Avanzar → Girar",ok:false},{t:"Iniciar → Llegar → Girar  ",ok:false}],feedback:"Los drones necesitan seguir pasos secuenciales para no perderse en la plaza."},
+          {q:"Fuente central: orden correcto para encenderla",options:[{t:"Encender bomba → Abrir válvula → Activar luces",ok:true},{t:"Activar luces → Abrir válvula → Encender bomba",ok:false},{t:"Abrir válvula → Encender bomba → Activar luces",ok:false},{t:"Encender bomba → Activar luces → Abrir válvula",ok:false}],feedback:"Primero la bomba, luego la válvula y al final las luces."},
+          {q:"Tranvía eléctrico: secuencia válida",options:[{t:"Abrir puertas → Subir pasajeros → Cerrar puertas → Arrancar",ok:true},{t:"Cerrar puertas → Arrancar → Abrir puertas → Subir pasajeros",ok:false},{t:"Subir pasajeros → Cerrar puertas → Arrancar → Abrir puertas",ok:false},{t:"Abrir puertas → Cerrar puertas → Subir pasajeros → Arrancar",ok:false}],feedback:"Los pasajeros deben subir antes de arrancar."},
+          {q:"Kiosko automático: preparar un jugo",options:[{t:"Recibir pedido → Tomar vaso → Llenar vaso → Entregar",ok:true},{t:"Tomar vaso → Entregar → Recibir pedido → Llenar vaso",ok:false},{t:"Recibir pedido → Llenar vaso → Tomar vaso → Entregar",ok:false},{t:"Recibir pedido → Entregar → Tomar vaso → Llenar vaso",ok:false}],feedback:"La secuencia correcta asegura que el cliente reciba su pedido."},
+          {q:"Dron guía turístico: ruta mínima a la torre",options:[{t:"Iniciar → Ir recto → Llegar a torre",ok:true},{t:"Iniciar → Llegar a torre → Ir recto",ok:false},{t:"Llegar a torre → Ir recto → Girar",ok:false},{t:"Girar → Ir recto → Llegar a torre",ok:false}],feedback:"El dron sigue un camino con inicio y final."},
+          {q:"Escaleras holográficas: sincronización",options:[{t:"Encender holograma → Proyectar escalones → Asegurar pasamanos",ok:true},{t:"Proyectar escalones → Asegurar pasamanos → Encender holograma",ok:false},{t:"Asegurar pasamanos → Encender holograma → Proyectar escalones",ok:false},{t:"Proyectar escalones → Encender holograma → Asegurar pasamanos",ok:false}],feedback:"La proyección solo funciona si se enciende primero el holograma."},
+          {q:"Patrulla robótica: ronda correcta que sigue las manecillas del reloj",options:[{t:"Norte → Este → Sur → Oeste",ok:true},{t:"Oeste → Sur → Este → Norte",ok:false},{t:"Este → Norte → Oeste → Sur",ok:false},{t:"Norte → Sur → Este → Oeste",ok:false}],feedback:"La patrulla debe recorrer en orden los cuatro puntos cardinales."},
+          {q:"Robot de limpieza: orden adecuado",options:[{t:"Encender agua → Barrer → Aspirar → Secar",ok:true},{t:"Barrer → Secar → Encender agua → Aspirar",ok:false},{t:"Aspirar → Encender agua → Barrer → Secar",ok:false},{t:"Secar → Barrer → Aspirar → Encender agua",ok:false}],feedback:"El proceso inicia encendiendo el agua y termina secando."},
+          {q:"Pantalla informativa: mensajes en secuencia",options:[{t:"Bienvenido → Nombre del visitante → Mensaje final",ok:true},{t:"Nombre del visitante → Bienvenido → Mensaje final",ok:false},{t:"Mensaje final → Bienvenido → Nombre",ok:false},{t:"Bienvenido → Mensaje final → Nombre",ok:false}],feedback:"La bienvenida siempre va primero."},
+          {q:"Escudo de la Plaza: arranque seguro",options:[{t:"Iniciar → Verificar sensores → Cargar energía → Activar núcleo → Desplegar escudo",ok:true},{t:"Cargar energía → Iniciar → Activar núcleo → Verificar sensores → Desplegar escudo",ok:false},{t:"Verificar sensores → Desplegar escudo → Activar núcleo → Cargar energía → Iniciar",ok:false},{t:"Iniciar → Cargar energía → Desplegar escudo → Verificar sensores → Activar núcleo",ok:false}],feedback:"El escudo requiere pasos seguros antes de activarse."}
         ]
       },
-      { // 2) Parque de Variables
+      {
         badge:"Lección 2/4", title:"🌱 Parque de Variables", theory:Theory.parque,
         retos:[
-          {q:"¿Asignación válida para nombre?",
-            options:[
-              {t:'nombre ← "Ana"', ok:true},
-              {t:"nombre ← 22", ok:false},
-              {t:"nombre ← verdadero", ok:false},
-              {t:"nombre ← nombre + 1", ok:false}
-            ]},
-          {q:"Edad de un ciudadano:",
-            options:[
-              {t:"edad ← 21", ok:true},
-              {t:'edad ← "veintiuno"', ok:false},
-              {t:"edad ← verdadero", ok:false},
-              {t:'edad ← "21 años"', ok:false}
-            ]},
-          {q:"Las flores booleanas se encienden con:",
-            options:[
-              {t:"verdadero", ok:true},
-              {t:'"sí"', ok:false},
-              {t:"1.5", ok:false},
-              {t:'"encender"', ok:false}
-            ]},
-          {q:"Color de luz del árbol (valor correcto):",
-            options:[
-              {t:'color ← "Azul"', ok:true},
-              {t:"color ← 255", ok:false},
-              {t:"color ← verdadero", ok:false},
-              {t:"color ← nombre", ok:false}
-            ]},
-          {q:"Concatenación de saludo en pantalla:",
-            options:[
-              {t:'saludo ← "Hola " + nombre', ok:true},
-              {t:'saludo ← "Hola " - nombre', ok:false},
-              {t:'saludo ← "Hola ", nombre', ok:false},
-              {t:'saludo ← nombre - "Hola"', ok:false}
-            ]},
-          {q:"Destino del robot guía:",
-            options:[
-              {t:'destino ← "Torre Central"', ok:true},
-              {t:"destino ← 1024.3", ok:false},
-              {t:"destino ← verdadero", ok:false},
-              {t:"destino ← edad", ok:false}
-            ]},
-          {q:"Estado del dron de control:",
-            options:[
-              {t:"activo ← verdadero", ok:true},
-              {t:'activo ← "true"', ok:false},
-              {t:"activo ← 2", ok:false},
-              {t:"activo ← color", ok:false}
-            ]},
-          {q:"Inicializa la variable carrera:",
-            options:[
-              {t:'carrera ← "Ingeniería"', ok:true},
-              {t:"carrera ←", ok:false},
-              {t:"carrera ← verdadero", ok:false},
-              {t:"carrera ← 3*nombre", ok:false}
-            ]},
-          {q:"Tipo correcto para la variable edad:",
-            options:[
-              {t:"Numérico", ok:true},
-              {t:"Texto", ok:false},
-              {t:"Lógico", ok:false},
-              {t:"Fecha", ok:false}
-            ]},
-          {q:"La Ficha de Ciudadano debe incluir:",
-            options:[
-              {t:"nombre, edad, carrera, colorFavorito", ok:true},
-              {t:"solo edad", ok:false},
-              {t:"carrera y activo", ok:false},
-              {t:"nombre y destino", ok:false}
-            ]}
+          {q:"¿Asignación válida para nombre?",options:[{t:'nombre ← "Ana"',ok:true},{t:"nombre ← 22",ok:false},{t:"nombre ← verdadero",ok:false},{t:"nombre ← nombre + 1",ok:false}],feedback:"El nombre debe ser texto."},
+          {q:"Edad de un ciudadano:",options:[{t:"edad ← 21",ok:true},{t:'edad ← "veintiuno"',ok:false},{t:"edad ← verdadero",ok:false},{t:'edad ← "21 años"',ok:false}],feedback:"La edad es un valor numérico."},
+          {q:"Las flores booleanas se encienden con:",options:[{t:"verdadero",ok:true},{t:'"sí"',ok:false},{t:"1.5",ok:false},{t:'"encender"',ok:false}],feedback:"Las variables lógicas usan verdadero o falso."},
+          {q:"Color de luz del árbol (valor correcto):",options:[{t:'color ← "Azul"',ok:true},{t:"color ← 255",ok:false},{t:"color ← verdadero",ok:false},{t:"color ← nombre",ok:false}],feedback:"El color debe ser texto."},
+          {q:"Concatenación de saludo en pantalla:",options:[{t:'saludo ← "Hola " + nombre',ok:true},{t:'saludo ← "Hola " - nombre',ok:false},{t:'saludo ← "Hola ", nombre',ok:false},{t:'saludo ← nombre - "Hola"',ok:false}],feedback:"La concatenación usa el símbolo +."},
+          {q:"Destino del robot guía:",options:[{t:'destino ← "Torre Central"',ok:true},{t:"destino ← 1024.3",ok:false},{t:"destino ← verdadero",ok:false},{t:"destino ← edad",ok:false}],feedback:"El destino es un texto."},
+          {q:"Estado del dron de control:",options:[{t:"activo ← verdadero",ok:true},{t:'activo ← "true"',ok:false},{t:"activo ← 2",ok:false},{t:"activo ← color",ok:false}],feedback:"Activo es un valor lógico verdadero/falso."},
+          {q:"Inicializa la variable carrera:",options:[{t:'carrera ← "Ingeniería"',ok:true},{t:"carrera ←",ok:false},{t:"carrera ← verdadero",ok:false},{t:"carrera ← 3*nombre",ok:false}],feedback:"La carrera se guarda como texto."},
+          {q:"Tipo correcto para la variable edad:",options:[{t:"Numérico",ok:true},{t:"Texto",ok:false},{t:"Lógico",ok:false},{t:"Fecha",ok:false}],feedback:"Edad es numérica."},
+          {q:"La Ficha de Ciudadano debe incluir:",options:[{t:"nombre, edad, carrera, colorFavorito",ok:true},{t:"solo edad",ok:false},{t:"carrera y activo",ok:false},{t:"nombre y destino",ok:false}],feedback:"La ficha incluye varios atributos básicos."}
         ]
       },
-      { // 3) Taller de Operatoria
+      {
         badge:"Lección 3/4", title:"⚙️ Taller de Operatoria", theory:Theory.taller,
         retos:[
-          {q:"Generador de suma:",
-            options:[
-              {t:"resultado ← 3 + 2", ok:true},
-              {t:"resultado ← 3 × 2", ok:false},
-              {t:"resultado ← 3 / 2", ok:false},
-              {t:"resultado ← 3 − 2", ok:false}
-            ]},
-          {q:"Resta de recursos correcta:",
-            options:[
-              {t:"faltan ← 10 − 4", ok:true},
-              {t:"faltan ← 10 + 4", ok:false},
-              {t:"faltan ← 10 × 4", ok:false},
-              {t:"faltan ← 10 ÷ 4", ok:false}
-            ]},
-          {q:"Multiplicador de suministros:",
-            options:[
-              {t:"total ← precio * cantidad", ok:true},
-              {t:"total ← precio + cantidad", ok:false},
-              {t:"total ← precio / cantidad", ok:false},
-              {t:"total ← cantidad − precio", ok:false}
-            ]},
-          {q:"División de energía por drones:",
-            options:[
-              {t:"parte ← 100 / 5", ok:true},
-              {t:"parte ← 100 * 5", ok:false},
-              {t:"parte ← 100 − 5", ok:false},
-              {t:"parte ← 100 + 5", ok:false}
-            ]},
-          {q:"Comparador de baterías (robot A con más carga):",
-            options:[
-              {t:"bateriaA &gt; bateriaB", ok:true},
-              {t:"bateriaA == bateriaB", ok:false},
-              {t:"bateriaA + bateriaB", ok:false},
-              {t:"bateriaA &lt; bateriaB", ok:false}
-            ]},
-          {q:"Termómetro digital por debajo del umbral:",
-            options:[
-              {t:"temperatura &lt; 30", ok:true},
-              {t:'temperatura = "baja"', ok:false},
-              {t:"temperatura + 30", ok:false},
-              {t:"30 &lt; temperatura == verdadero", ok:false}
-            ]},
-          {q:"Concatenación de saludo:",
-            options:[
-              {t:'mensaje ← "Hola " + nombre', ok:true},
-              {t:'mensaje ← "Hola " - nombre', ok:false},
-              {t:"mensaje ← nombre / Hola", ok:false},
-              {t:"mensaje ← verdadero + nombre", ok:false}
-            ]},
-          {q:"Prioridad correcta de operaciones:",
-            options:[
-              {t:"resultado ← (3 + 2) * 5", ok:true},
-              {t:"resultado ← 3 + 2 * 5 (sin paréntesis)", ok:false},
-              {t:"resultado ← 3 + (2 * 5) - 0 sin paréntesis", ok:false},
-              {t:"resultado ← 3 + 2 * (5 − 5) + 5", ok:false}
-            ]},
-          {q:"¿Qué operación es inválida?",
-            options:[
-              {t:"5 / 0", ok:true},
-              {t:"(8 − 3) * 2", ok:false},
-              {t:"10 % 3", ok:false},
-              {t:"4 + 4 * 2", ok:false}
-            ]},
-          {q:"Para encender el taller principal se requiere:",
-            options:[
-              {t:"usar suma, resta y multiplicación", ok:true},
-              {t:"solo resta", ok:false},
-              {t:"sólo concatenar textos", ok:false},
-              {t:"ninguna operación", ok:false}
-            ]}
+          {q:"Generador de suma:",options:[{t:"resultado ← 3 + 2",ok:true},{t:"resultado ← 3 × 2",ok:false},{t:"resultado ← 3 / 2",ok:false},{t:"resultado ← 3 − 2",ok:false}],feedback:"La suma utiliza el operador +."},
+          {q:"Resta de recursos correcta:",options:[{t:"faltan ← 10 − 4",ok:true},{t:"faltan ← 10 + 4",ok:false},{t:"faltan ← 10 × 4",ok:false},{t:"faltan ← 10 ÷ 4",ok:false}],feedback:"La resta se hace con el signo −."},
+          {q:"Multiplicador de suministros:",options:[{t:"total ← precio * cantidad",ok:true},{t:"total ← precio + cantidad",ok:false},{t:"total ← precio / cantidad",ok:false},{t:"total ← cantidad − precio",ok:false}],feedback:"El total es precio multiplicado por cantidad."},
+          {q:"División de energía por drones:",options:[{t:"parte ← 100 / 5",ok:true},{t:"parte ← 100 * 5",ok:false},{t:"parte ← 100 − 5",ok:false},{t:"parte ← 100 + 5",ok:false}],feedback:"La energía se reparte dividiendo."},
+          {q:"Comparador de baterías (robot A con más carga):",options:[{t:"bateriaA > bateriaB",ok:true},{t:"bateriaA == bateriaB",ok:false},{t:"bateriaA + bateriaB",ok:false},{t:"bateriaA < bateriaB",ok:false}],feedback:"El símbolo > indica que A tiene más que B."},
+          {q:"Termómetro digital por debajo del umbral:",options:[{t:"temperatura < 30",ok:true},{t:'temperatura = "baja"',ok:false},{t:"temperatura + 30",ok:false},{t:"30 < temperatura == verdadero",ok:false}],feedback:"Las comparaciones usan < o >."},
+          {q:"Concatenación de saludo:",options:[{t:'mensaje ← "Hola " + nombre',ok:true},{t:'mensaje ← "Hola " - nombre',ok:false},{t:"mensaje ← nombre / Hola",ok:false},{t:"mensaje ← verdadero + nombre",ok:false}],feedback:"Para concatenar se usa el +."},
+          {q:"Prioridad correcta de operaciones:",options:[{t:"resultado ← (3 + 2) * 5",ok:true},{t:"resultado ← 3 + 2 * 5 (sin paréntesis)",ok:false},{t:"resultado ← 3 + (2 * 5) - 0 sin paréntesis",ok:false},{t:"resultado ← 3 + 2 * (5 − 5) + 5",ok:false}],feedback:"Los paréntesis cambian la prioridad."},
+          {q:"¿Qué operación es inválida?",options:[{t:"5 / 0",ok:true},{t:"(8 − 3) * 2",ok:false},{t:"10 % 3",ok:false},{t:"4 + 4 * 2",ok:false}],feedback:"No se puede dividir entre cero."},
+          {q:"Para encender el taller principal de Operatoria se requiere:",options:[{t:"usar suma, resta y multiplicación",ok:true},{t:"booleanos",ok:false},{t:"sólo concatenar textos",ok:false},{t:"ninguna operación",ok:false}],feedback:"El taller necesita varias operaciones básicas."}
         ]
       },
-      { // 4) Barrio Secuencial
+      {
         badge:"Lección 4/4", title:"🏘️ Barrio Secuencial", theory:Theory.barrio,
         retos:[
-          {q:"Robot mensajero (entrega correcta):",
-            options:[
-              {t:"Ir → Recoger → Entregar", ok:true},
-              {t:"Entregar → Ir → Recoger", ok:false},
-              {t:"Recoger → Entregar → Ir", ok:false},
-              {t:"Ir → Entregar → Recoger", ok:false}
-            ]},
-          {q:"Cinta transportadora hacia dron:",
-            options:[
-              {t:"Activar cinta → Mover paquete → Entregar al dron", ok:true},
-              {t:"Mover paquete → Entregar → Activar cinta", ok:false},
-              {t:"Entregar → Activar cinta → Mover", ok:false},
-              {t:"Activar → Entregar → Mover", ok:false}
-            ]},
-          {q:"Portón digital de seguridad:",
-            options:[
-              {t:"Abrir → Revisar → Cerrar", ok:true},
-              {t:"Revisar → Abrir → Cerrar", ok:false},
-              {t:"Cerrar → Revisar → Abrir", ok:false},
-              {t:"Abrir → Cerrar → Revisar", ok:false}
-            ]},
-          {q:"Semáforo inteligente:",
-            options:[
-              {t:"Verde → Amarillo → Rojo", ok:true},
-              {t:"Rojo → Verde → Amarillo", ok:false},
-              {t:"Amarillo → Rojo → Verde", ok:false},
-              {t:"Verde → Rojo → Amarillo", ok:false}
-            ]},
-          {q:"Puente retráctil sobre el río de datos:",
-            options:[
-              {t:"Bajar → Cruzar → Subir", ok:true},
-              {t:"Subir → Bajar → Cruzar", ok:false},
-              {t:"Cruzar → Bajar → Subir", ok:false},
-              {t:"Bajar → Subir → Cruzar", ok:false}
-            ]},
-          {q:"Casa inteligente (bienvenida):",
-            options:[
-              {t:"Encender luces → Música → Pantalla", ok:true},
-              {t:"Pantalla → Música → Luces", ok:false},
-              {t:"Música → Pantalla → Luces", ok:false},
-              {t:"Luces → Pantalla → Música", ok:false}
-            ]},
-          {q:"Despacho de drones de reparto:",
-            options:[
-              {t:"Preparar paquete → Cargar → Enviar", ok:true},
-              {t:"Enviar → Preparar → Cargar", ok:false},
-              {t:"Cargar → Enviar → Preparar", ok:false},
-              {t:"Preparar → Enviar → Cargar", ok:false}
-            ]},
-          {q:"Estación de recarga:",
-            options:[
-              {t:"Conectar → Cargar → Desconectar", ok:true},
-              {t:"Desconectar → Cargar → Conectar", ok:false},
-              {t:"Cargar → Desconectar → Conectar", ok:false},
-              {t:"Conectar → Desconectar → Cargar", ok:false}
-            ]},
-          {q:"Pasarela holográfica:",
-            options:[
-              {t:"Encender proyector → Mostrar escalones", ok:true},
-              {t:"Mostrar escalones → Encender proyector", ok:false},
-              {t:"Subir escalones → Encender proyector", ok:false},
-              {t:"Encender proyector → Subir escalones → Mostrar", ok:false}
-            ]},
-          {q:"Turista robot (pseudocódigo breve):",
-            options:[
-              {t:"Paso1 → Paso2 → Paso3 → Paso4", ok:true},
-              {t:"Paso4 → Paso3 → Paso2 → Paso1", ok:false},
-              {t:"Paso1 → Paso3 → Paso2 → Paso4", ok:false},
-              {t:"Paso2 → Paso1 → Paso4 → Paso3", ok:false}
-            ]}
+          {q:"Robot mensajero (Entrega correcta):",options:[{t:"Ir → Recoger → Entregar",ok:true},{t:"Entregar → Ir → Recoger",ok:false},{t:"Recoger → Entregar → Ir",ok:false},{t:"Ir → Entregar → Recoger",ok:false}],feedback:"El mensajero primero va, luego recoge y finalmente entrega."},
+          {q:"Cinta transportadora hacia dron:",options:[{t:"Activar cinta → Mover paquete → Entregar al dron",ok:true},{t:"Mover paquete → Entregar → Activar cinta",ok:false},{t:"Entregar → Activar cinta → Mover",ok:false},{t:"Activar → Entregar → Mover",ok:false}],feedback:"La cinta se activa primero, luego transporta y al final entrega."},
+          {q:"Portón digital de seguridad:",options:[{t:"Abrir → Revisar → Cerrar",ok:true},{t:"Revisar → Abrir → Cerrar",ok:false},{t:"Cerrar → Revisar → Abrir",ok:false},{t:"Abrir → Cerrar → Revisar",ok:false}],feedback:"El portón debe abrirse, revisarse y cerrarse en ese orden."},
+          {q:"Semáforo inteligente:",options:[{t:"Verde → Amarillo → Rojo",ok:true},{t:"Rojo → Verde → Amarillo",ok:false},{t:"Amarillo → Rojo → Verde",ok:false},{t:"Verde → Rojo → Amarillo",ok:false}],feedback:"El semáforo sigue el orden habitual verde-amarillo-rojo."},
+          {q:"Puente retráctil sobre el río de datos:",options:[{t:"Bajar → Cruzar → Subir",ok:true},{t:"Subir → Bajar → Cruzar",ok:false},{t:"Cruzar → Bajar → Subir",ok:false},{t:"Bajar → Subir → Cruzar",ok:false}],feedback:"Primero baja, luego cruzan y al final sube."},
+          {q:"Casa inteligente (Dar la bienvenida):",options:[{t:"Encender luces → Música → muestra texto en pantalla",ok:true},{t:"Muestra texto en pantalla → Música → Luces",ok:false},{t:"Música → muestra texto en pantalla → Luces",ok:false},{t:"Luces → Muestra texto en pantalla → Música",ok:false}],feedback:"La bienvenida enciende luces, pone música y muestra texto en la pantalla."},
+          {q:"Despacho de drones de reparto:",options:[{t:"Preparar paquete → Cargar → Enviar",ok:true},{t:"Enviar → Preparar → Cargar",ok:false},{t:"Cargar → Enviar → Preparar",ok:false},{t:"Preparar → Enviar → Cargar",ok:false}],feedback:"El dron se prepara, se carga y luego se envía."},
+          {q:"Estación de recarga:",options:[{t:"Conectar → Cargar → Desconectar",ok:true},{t:"Desconectar → Cargar → Conectar",ok:false},{t:"Cargar → Desconectar → Conectar",ok:false},{t:"Conectar → Desconectar → Cargar",ok:false}],feedback:"El ciclo correcto es conectar, cargar y desconectar."},
+          {q:"Pasarela holográfica:",options:[{t:"Encender proyector → Mostrar escalones",ok:true},{t:"Mostrar escalones → Encender proyector",ok:false},{t:"Subir escalones → Encender proyector",ok:false},{t:"Encender proyector → Subir escalones → Mostrar",ok:false}],feedback:"Primero se enciende el proyector, luego se muestran los escalones."},
+          {q:"Turista robot (pseudocódigo breve):",options:[{t:"Paso1 → Paso2 → Paso3 → Paso4",ok:true},{t:"Paso4 → Paso3 → Paso2 → Paso1",ok:false},{t:"Paso1 → Paso3 → Paso2 → Paso4",ok:false},{t:"Paso2 → Paso1 → Paso4 → Paso3",ok:false}],feedback:"Los pasos secuenciales deben seguir un orden lógico."}
         ]
       }
     ];
 
-    // ---------- LÓGICA ----------
-    const $ = id => document.getElementById(id);
-    let L = 0;  // índice de lección
-    let R = 0;  // índice de reto
-
-    function shuffle(arr){
-      for(let i=arr.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]] = [arr[j],arr[i]];
-      }
-      return arr;
+    // ================== LÓGICA JUEGO ==================
+    const $=id=>document.getElementById(id);
+    let L=0,R=0,player="";
+    function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+    function startGame(){
+      const name=$("playerName").value.trim();
+      if(!name){alert("Por favor ingresa tu nombre");return;}
+      player=name;
+      $("overlay").style.display="none";
+      $("wrap").style.display="flex";
+      renderBook(); renderChallenge();
     }
-
     function renderBook(){
-      const cur = Lessons[L];
-      $("badge").textContent = cur.badge;
-      $("title").textContent = cur.title;
-      $("theory").innerHTML = cur.theory;
-      $("pbar").style.width = `${(R/10)*100}%`;
-      $("ptext").textContent = `${R}/10`;
+      const cur=Lessons[L]; $("badge").textContent=cur.badge; $("title").textContent=cur.title; $("theory").innerHTML=cur.theory;
+      $("pbar").style.width=`${(R/10)*100}%`; $("ptext").textContent=`${R}/10`;
     }
-
     function renderChallenge(){
-      const cur = Lessons[L], reto = cur.retos[R];
-      $("ctitle").textContent = `Reto ${R+1}`;
-      const opts = shuffle(reto.options.map(o => ({...o}))); // copiar y mezclar
-      let html = `<div class="card"><p>${reto.q}</p><div class="choices">`;
-      for(const o of opts){
-        html += `<button class="choice" onclick="check(${o.ok})">${o.t}</button>`;
-      }
-      html += `</div><div id="msg" class="msg"></div></div>`;
-      $("challenge").innerHTML = html;
-      $("pbar").style.width = `${(R/10)*100}%`;
-      $("ptext").textContent = `${R}/10`;
+      const cur=Lessons[L], reto=cur.retos[R];
+      $("ctitle").textContent=`Reto ${R+1}`;
+      const opts=shuffle(reto.options.map(o=>({...o})));
+      let html=`<div class="card"><p>${reto.q}</p><div class="choices">`;
+      for(const o of opts){ html+=`<button class="choice" onclick="check(${o.ok},'${reto.feedback}')">${o.t}</button>`; }
+      html+=`</div><div id="msg" class="msg"></div></div>`; $("challenge").innerHTML=html;
     }
-
-    function check(isOk){
-      const msg = $("msg");
+    function check(isOk,fb){
+      const msg=$("msg");
       if(isOk){
-        msg.textContent = "✅ ¡Correcto!";
-        setTimeout(()=>{
-          R++;
-          if(R>=10){
-            L++;
-            if(L>=Lessons.length){
-              // fin del nivel
-              $("book").innerHTML = `
-                <div class="section-title"><h3>📖 Libro de la Sabiduría</h3></div>
-                <h3>🏆 Nivel completado</h3>
-                <div class="block"><p>¡Felicitaciones! Eres <b>Explorador Oficial de Pseintia</b>.
-                Restauraste Plaza Algoritmia, Parque de Variables, Taller de Operatoria y Barrio Secuencial.</p></div>`;
-              $("play").innerHTML = `<h3>🎉 ¡Terminaste los 40 retos!</h3>
-                <p>Prepárate para el Nivel 2: <b>Constructores de Pseintia</b>.</p>`;
-              return;
-            }
-            R = 0; // reiniciar retos de la nueva lección
-            renderBook();
-            renderChallenge();
-          }else{
-            renderChallenge();
-          }
-        }, 400);
-      }else{
-        msg.textContent = "❌ Incorrecto. Intenta nuevamente.";
-      }
+        msg.textContent="✅ Correcto. "+fb;
+        setTimeout(()=>{R++; if(R>=10){L++; if(L>=Lessons.length){endGame(); return;} R=0; renderBook();} renderChallenge();},5000);
+      }else{ msg.textContent="❌ Incorrecto. Intenta otra opción."; }
+      $("pbar").style.width=`${(R/10)*100}%`; $("ptext").textContent=`${R}/10`;
     }
-
-    // Inicialización
-    renderBook();
-    renderChallenge();
+    function endGame(){
+      const d=new Date();
+      $("book").innerHTML=`<h3>🏆 Nivel completado</h3><p>🎉 ¡Felicitaciones, <b>${player}</b>! Has completado el Nivel 1 el ${d.toLocaleDateString()} a las ${d.toLocaleTimeString()}.</p>`;
+      $("play").innerHTML="<h3>🎉 ¡Terminaste los 40 retos!</h3><p>Prepárate para el Nivel 2: Constructores de PSeInt-IX.</p>";
+    }
   </script>
 </body>
 </html>
-
