@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Peligros en la red – Aprendiendo con @LaProfeVivy</title>
+  <style>
+    body{
+      margin:0; font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
+      color:#eaf2ff; background:#0b1220;
+    }
+    header{padding:16px; text-align:center; background:#111c34; border-bottom:1px solid #253a6b}
+    h1{margin:0; font-size:1.6rem}
+    main{max-width:1500px; margin:0 auto; padding:16px}
+    .grid{display:grid; grid-template-columns:repeat(6,1fr); gap:16px}
+    .card{background:#111c34; border:1px solid #253a6b; border-radius:14px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,.4)}
+    .frame{position:relative; background:#000}
+    .ratio{aspect-ratio:9/16; width:100%}
+    .ratio iframe{width:100%; height:100%; border:0}
+    .content{padding:10px}
+    select{width:100%; padding:6px; border-radius:6px; border:1px solid #253a6b; background:#0d1a36; color:#eaf2ff; margin-top:8px; font-size:.85rem}
+    footer{text-align:center; padding:20px; color:#b6c3e6}
+    footer .brand{margin-top:6px; font-weight:700; color:#fff}
+    @media(max-width:1400px){.grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:600px){.grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Peligros en la red</h1>
+    <p>Explora los videos en este mural pedagógico y elige la categoría que mejor represente el caso.</p>
+  </header>
+  <main>
+    <section class="grid">
+      <script>
+        const videos = [
+          "1_YxPCtSg9MPmC8rTD9wBMoiLlZL8sFx0",
+          "11SU9hvkkz1R2h18Upp-pW72NrS9UrYqq",
+          "18T4jFmTgt_uoWIymlmbwzbVtVxabCbEm",
+          "1yV9xN1y0WuccTk-dh2zgggNKV4_pC7lW",
+          "1cD6tuxTQ39C1un_6TpOeC572W0vqFgOb",
+          "1fHEUKRLarJQ5x8XfCgyqAYbdZRI2qSm7",
+          "1g3GEvSTA9jqG3EzJW4Xdpgald2aY_IZD",
+          "139dIXvCN14uMhFnmB6nkZiYonET8IX2G",
+          "172rqxwXE5BwCuXFX89iy_D6WDtbrCozh",
+          "1g5m-jRFLkU3EuCd6YjTlNkFVCIA8Zn_F",
+          "1ZuH6YBf050R5AzYR0QvbOCmXbkkQ56Gh",
+          "1dzkGKuSPXiOzuE3XpmAQmZ85kwcpw3eY",
+          "1MrFQE0JCcgQ8jgAKz_awSWUG_bHAPVUZ",
+          "1lJ5RGabMuRMrwaCeJAuTwxH5Vy5MsN40",
+          "15A2hl-1d0r6qGqR0Z6Ce65DGFTQSnk8g",
+          "1jZbDpogoDVMRhIejrJjy-c-hEa_pmmyR",
+          "19zGJa67L4mHOHJ2AjWp6pa8WQu5xryH7",
+          "1_-V7KMiszl-u6n7LkKHaChSgMiZJXHgY",
+          "1RUEC8yF4eXlX--0WrHE5dVa5d1xd-0u2",
+          "14Z6aYIWm2uvLT5Nuz0nldq9By0SMXuos",
+          "19rCfnwrwrRZgkSGHFAKayLPnzYzAOG-i"
+        ];
+
+        const opciones = [
+          "-- Elegir --",
+          "Criptojacking","Malware","Ransomware","Spyware","Keylogger","Adware",
+          "Phishing","Ingeniería social","Fake news o desinformación",
+          "Suplantación en redes sociales","Extorsión digital",
+          "Ataques Wifi","Bots maliciosos","Robo de identidad","Robo de cuentas"
+        ];
+
+        const grid = document.currentScript.parentElement;
+        videos.forEach(id => {
+          const card = document.createElement('article');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="frame ratio">
+              <iframe src="https://drive.google.com/file/d/${id}/preview" allowfullscreen></iframe>
+            </div>
+            <div class="content">
+              <label>Selecciona el tipo de amenaza:</label>
+              <select>${opciones.map(o=>`<option>${o}</option>`).join('')}</select>
+            </div>`;
+          grid.appendChild(card);
+        });
+      </script>
+    </section>
+  </main>
+  <footer>
+    <div>Este mural es un tablero pedagógico para uso académico.</div>
+    <div class="brand">Aprendiendo con @LaProfeVivy</div>
+  </footer>
+</body>
+</html>
 
