@@ -1,1 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aprende a programar en PSeInt — Nivel 1</title>
+  <style>
+    :root{
+      --bg1:#dff3ff; --bg2:#eef9ff; --ink:#0e2a4d; --muted:#6c86b5;
+      --primary:#2dd4bf; --accent:#60a5fa; --good:#16a34a; --bad:#ef4444;
+      --card:#ffffff; --shadow:0 12px 28px rgba(20,58,112,.15);
+      --kwA:#2563eb; --kwD:#059669; --kwE:#a855f7; --kwF:#db2777;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Nunito", Poppins, system-ui, Segoe UI, Arial, sans-serif;color:var(--ink);background:linear-gradient(180deg,var(--bg1),var(--bg2));min-height:100vh}
 
+    header{display:flex;align-items:center;gap:12px;justify-content:center;padding:16px 18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand svg{width:40px;height:40px}
+    h1{font-size:1.35rem;margin:0}
+
+    .shell{max-width:1024px;margin:0 auto;padding:8px 14px}
+
+    /* ====== MAPA DE MISIONES (Duolingo-like) ====== */
+    #mapView{position:relative; min-height:560px; background:var(--card); border-radius:24px; border:2px solid #e6f2ff; box-shadow:var(--shadow); overflow:hidden}
+    .map-canvas{position:absolute; inset:0}
+    .map-bg{position:absolute; inset:0}
+    .node{position:absolute; width:88px; height:88px; border-radius:999px; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; font-weight:800; font-size:.95rem; transition:transform .12s ease, box-shadow .2s, filter .2s}
+    .node .dot{width:64px; height:64px; border-radius:999px; display:flex; align-items:center; justify-content:center}
+    .node.unlocked .dot{background:#c7f7f0; border:3px solid var(--primary); box-shadow:0 6px 18px rgba(45,212,191,.35)}
+    .node.locked .dot{background:#e9eef7; color:#9aa8c1; border:3px dashed #c9d6ea; filter:grayscale(.3)}
+    .node.done .dot{background:#d1fae5; border:3px solid var(--good); box-shadow:0 6px 18px rgba(22,163,74,.35)}
+    .node:hover{transform:translateY(-2px)}
+    .node small{display:block; font-weight:700; color:#40506b; margin-top:6px; font-size:.8rem}
+
+    .path{position:absolute; inset:0; pointer-events:none}
+
+    .legend{position:absolute; top:14px; left:14px; background:#ffffffcc; backdrop-filter:blur(6px); border:1px solid #e6f2ff; border-radius:12px; padding:8px 12px; font-size:.9rem}
+
+    /* ====== STAGE (Misión activa con Dini) ====== */
+    #missionView{display:none; background:var(--card);border-radius:24px;border:2px solid #e6f2ff;box-shadow:var(--shadow);padding:18px;min-height:560px}
+
+    .dini{display:flex;gap:12px;align-items:center;background:#f0fbff;border:2px solid #d8efff;border-radius:20px;padding:12px}
+    .dini svg{width:62px;height:62px;flex:0 0 62px}
+    .speech{font-size:1.02rem}
+
+    .title2{font-size:1.05rem;margin:0}
+    .sub{color:var(--muted);font-size:.95rem;margin:.2rem 0 .6rem}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:760px){.grid{grid-template-columns:repeat(2,1fr)}}
+    .card{background:#ffffff;border:2px solid #e8f2ff;border-radius:20px;padding:16px;cursor:pointer;transition:transform .06s ease, box-shadow .15s ease, border-color .2s, filter .2s}
+    .card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.07)}
+    .card.correct{border-color:var(--good)}
+    .card.wrong{border-color:var(--bad)}
+    .row{display:flex;align-items:center;gap:12px}
+    .row svg{width:36px;height:36px}
+    .mini{color:var(--muted);font-size:.95rem}
+
+    .kbar{display:flex;gap:10px;justify-content:center;margin-top:auto}
+    .btn{border:none;border-radius:999px;padding:12px 18px;font-weight:800;cursor:pointer}
+    .btn-primary{background:var(--primary);color:#053f38}
+    .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+    .btn-ghost{background:transparent;border:2px solid #e2f3ff;color:#0e2a4d}
+
+    .progress{height:12px;background:#e6f2ff;border-radius:999px;overflow:hidden;margin:12px 0}
+    .bar{height:100%;width:0;background:var(--accent);transition:width .25s}
+
+    .fb{display:none;margin-top:6px;padding:10px;border-radius:14px;border:2px solid #eaf2ff;background:#f7fbff}
+    .ok{color:var(--good)} .bad{color:var(--bad)}
+
+    pre{background:#0f1e2e;color:#eaf2ff;border-radius:16px;padding:14px;border:2px solid #193056;overflow:auto}
+    code .kwA{color:var(--kwA);font-weight:800}
+    code .kwD{color:var(--kwD);font-weight:800}
+    code .kwE{color:var(--kwE);font-weight:800}
+    code .kwF{color:var(--kwF);font-weight:800}
+
+    .sortable{display:flex;flex-direction:column;gap:10px}
+    .tile{background:#ffffff;border:2px dashed #cfe0ff;border-radius:16px;padding:12px;cursor:grab;transition: box-shadow .2s, border-color .2s, filter .2s}
+    .tile.drag{opacity:.6;border-color:#60a5fa}
+    .drop{outline:3px dashed #60a5fa}
+    .tile.locked{opacity:.55; border-color:#a7d3ff; cursor:default}
+
+    .anim-box{display:flex;gap:10px;align-items:center;background:#f7fcff;border:2px solid #e2f3ff;border-radius:16px;padding:10px}
+    .anim-box svg{width:56px;height:56px}
+    .pulse{animation:pulse 1.4s ease-in-out infinite}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+    .shine{animation:shine .9s ease-out;box-shadow:0 0 0 0 rgba(34,197,94,.0)}
+    @keyframes shine{0%{box-shadow:0 0 0 0 rgba(34,197,94,.0);filter:drop-shadow(0 0 0 rgba(34,197,94,0));}
+      40%{box-shadow:0 0 20px 6px rgba(34,197,94,.25);filter:drop-shadow(0 0 8px rgba(34,197,94,.45));}
+      100%{box-shadow:0 0 0 0 rgba(34,197,94,.0);filter:drop-shadow(0 0 0 rgba(34,197,94,0));}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 40c10-2 23-15 28-20l4 4c-5 5-18 18-20 28l-5-1-7 7-5-5 7-7-2-6z" fill="#60a5fa"/><path d="M40 8l16 16-9 3-10-10 3-9z" fill="#2dd4bf"/></svg>
+      <h1>Aprende a programar en PSeInt — Nivel 1</h1>
+    </div>
+  </header>
+
+  <div class="shell">
+
+    <!-- ===== MAPA DE MISIONES ===== -->
+    <section id="mapView">
+      <div class="legend">Elige una misión para comenzar</div>
+      <!-- fondo con path en S -->
+      <svg class="path" viewBox="0 0 1000 560" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#cfe8ff"/>
+            <stop offset="100%" stop-color="#c8f6ee"/>
+          </linearGradient>
+        </defs>
+        <path d="M120,80 C260,40 420,120 520,200 C620,280 760,300 880,230 M120,480 C260,430 420,380 520,300 C640,210 760,210 880,260" stroke="url(#grad)" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+      </svg>
+      <div class="map-canvas" id="mapNodes"></div>
+    </section>
+
+    <!-- ===== MISION ACTIVA (Dini) ===== -->
+    <section id="missionView">
+      <div class="dini">
+        <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="pulse">
+          <rect x="10" y="22" width="52" height="32" rx="10" fill="#2dd4bf"/>
+          <circle cx="28" cy="38" r="7" fill="#053f38"/>
+          <circle cx="44" cy="38" r="7" fill="#053f38"/>
+          <rect x="18" y="50" width="36" height="5" rx="3" fill="#0d695f"/>
+          <rect x="32" y="12" width="8" height="7" rx="3.5" fill="#7de9da"/>
+        </svg>
+        <div class="speech" id="speech">Misión 1 — Programa que suma dos números. Vamos paso a paso.</div>
+      </div>
+
+      <div class="progress"><div class="bar" id="bar"></div></div>
+
+      <div id="view"></div>
+
+      <div class="kbar">
+        <button class="btn btn-ghost" id="backToMap" style="display:none">◀ Volver al mapa</button>
+        <button class="btn btn-ghost" id="prev" disabled>◀ Atrás</button>
+        <button class="btn btn-primary" id="next" disabled>Continuar ▶</button>
+      </div>
+      <div id="fb" class="fb"></div>
+    </section>
+  </div>
+
+  <script>
+    const $=id=>document.getElementById(id);
+
+    /* ===================== ESTADO DE MISIONES ===================== */
+    const MISSIONS_TOTAL = 10;
+    let missions = [];
+    const STORAGE_KEY = 'pseint_missions_v1';
+
+    function loadMissions(){
+      try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw){ missions = JSON.parse(raw); return; } }catch(e){}
+      missions = Array(MISSIONS_TOTAL).fill('locked');
+      missions[0] = 'unlocked';
+      saveMissions();
+    }
+    function saveMissions(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(missions)); }catch(e){} }
+
+    function renderMap(){
+      const wrap = $('mapNodes');
+      wrap.innerHTML='';
+      // posiciones de 10 nodos en forma de S (relativas al contenedor 1000x560)
+      const pts = [
+        {x:120,y:80,label:'M1', name:'SumaDosNúmeros'},
+        {x:300,y:120,label:'M2', name:'Descuento'},
+        {x:480,y:180,label:'M3', name:'IMC'},
+        {x:650,y:240,label:'M4', name:'Promedio'},
+        {x:840,y:220,label:'M5', name:'Notas'},
+        {x:150,y:470,label:'M6', name:'Compra'},
+        {x:330,y:420,label:'M7', name:'Horas:Min'},
+        {x:520,y:340,label:'M8', name:'Combustible'},
+        {x:710,y:270,label:'M9', name:'Temperatura'},
+        {x:900,y:260,label:'M10',name:'Desafío'}
+      ];
+      const W = 1000, H = 560; // viewBox of path
+      const rect = $('mapView').getBoundingClientRect();
+      const scaleX = rect.width / W, scaleY = rect.height / H;
+
+      pts.forEach((p,i)=>{
+        const node = document.createElement('div');
+        node.className = `node ${missions[i]}`;
+        node.style.left = (p.x*scaleX - 44) + 'px';
+        node.style.top  = (p.y*scaleY - 44) + 'px';
+        node.dataset.idx = i;
+        node.innerHTML = `
+          <div class="dot">
+            <svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true">
+              <circle cx="32" cy="32" r="28" fill="#60a5fa" opacity="${missions[i]==='locked'?0.25:0.8}" />
+              <path d="M20 36l8 8 16-18" stroke="${missions[i]==='done'?'#16a34a':'#0e2a4d'}" stroke-width="4" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <small>${p.label}</small>`;
+        node.title = p.name + (missions[i]==='locked'?' (Bloqueada)':'');
+        node.onclick = ()=>{
+          if(missions[i] === 'locked') return;
+          startMission(i);
+        };
+        wrap.appendChild(node);
+      });
+    }
+
+    function goToMap(){
+      $('missionView').style.display='none';
+      $('mapView').style.display='block';
+      renderMap();
+    }
+    function goToMission(){
+      $('mapView').style.display='none';
+      $('missionView').style.display='block';
+    }
+
+    /* ===================== MISION 1: Dini Flow ===================== */
+    const speech=$('speech'), bar=$('bar'), view=$('view'), prev=$('prev'), next=$('next'), fb=$('fb'), backToMap=$('backToMap');
+    let step=0; // 0..6
+    let programName='SumaDosNumeros';
+    let currentMission = null;
+
+    const say = (html)=> speech.innerHTML=html;
+    const setProgress = ()=> bar.style.width=(step/6*100)+'%';
+    const feedback=(t,ok)=>{ fb.style.display='block'; fb.innerHTML=`<span class='${ok?'ok':'bad'}'>${t}</span>`; };
+    const clearFB=()=>{ fb.style.display='none'; fb.innerHTML=''; };
+
+    function typeInto(el, text, speed=16){ el.innerHTML=''; let i=0; (function tick(){ el.innerHTML=text.slice(0,i).replace(/\n/g,'<br/>'); if(i<text.length){ i++; setTimeout(tick, speed);} })(); }
+
+    function startMission(idx){
+      currentMission = idx;
+      if(idx!==0){
+        // Placeholder simple para otras misiones desbloqueadas
+        goToMission();
+        say(`Esta es la <b>Misión ${idx+1}</b>: <b>${['SumaDosNúmeros','Descuento','IMC','Promedio','Notas','Compra','Horas:Min','Combustible','Temperatura','Desafío'][idx]}</b>.<br/>Contenido próximo. Vuelve al mapa para seleccionar otra.`);
+        view.innerHTML = `<div class="card"><div class="title2">Próximamente</div><p class="sub">Aún no disponible en esta demo.</p></div>`;
+        prev.style.display='none'; next.style.display='none'; backToMap.style.display='inline-block';
+        backToMap.onclick = ()=>{ goToMap(); };
+        return;
+      }
+      // Misión 1 con todo el flujo
+      goToMission();
+      backToMap.style.display='none';
+      prev.style.display='inline-block'; next.style.display='inline-block';
+      step=0; render();
+    }
+
+    // ===== Paso 0: Bienvenida =====
+    function screen0(){
+      say('Hoy crearás tu primer programa en PSeInt: <b>sumar dos números</b>.');
+      view.innerHTML = `
+        <div class="card" id="start">
+          <div class="row">
+            <svg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'><path d='M32 6l8 16 18 3-13 12 3 18-16-8-16 8 3-18L6 25l18-3z' fill='#60a5fa'/></svg>
+            <div><div class='title2'><b>Crear mi programa</b></div><div class='sub'>Toca para comenzar</div></div>
+          </div>
+        </div>`;
+      $('start').onclick=()=>{ step=1; render(); };
+      prev.onclick=()=>{}; next.disabled=true;
+    }
+
+    // ===== Paso 1 — Nombre =====
+    function screen1(){
+      say('Paso 1 — <b>Nombre del programa</b>. Debe comenzar con letra y no tener espacios.<br><b>Ahora tú:</b> elige un nombre válido.');
+      const options=[
+        {label:'2Suma', ok:false, reason:'No puede empezar con número.'},
+        {label:'Suma Dos', ok:false, reason:'No puede tener espacios.'},
+        {label:'SumaDosNumeros', ok:true, reason:'¡Bien! Ese será el nombre.'},
+        {label:'Mi_suma', ok:false, reason:'Evita guiones bajos por ahora.'}
+      ];
+      renderChoices('Misión 1: Elegir nombre','Ahora tú: selecciona el nombre válido.', options, ()=>{ programName='SumaDosNumeros'; });
+      prev.onclick=()=>{ step=0; render(); };
+    }
+
+    // ===== Paso 2 — Variables =====
+    function screen2(){
+      say('Paso 2 — <b>Variables</b>. Son cajitas para guardar datos. Deben llamarse según lo que guardarán. Para números (con decimales) usa: <b class="kwD">Definir</b> ... <b>Como Real</b>.<br><b>Ahora tú:</b> crea las variables para guardar los números.');
+      view.innerHTML = `
+        <div class='anim-box'>
+          <svg viewBox='0 0 220 64' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+            <rect x='8' y='14' width='56' height='36' rx='8' fill='#e0f2fe' stroke='#93c5fd'/><text x='36' y='36' text-anchor='middle' fill='#1e3a8a' font-size='14' font-family='Nunito'>a</text>
+            <rect x='72' y='14' width='56' height='36' rx='8' fill='#e0f2fe' stroke='#93c5fd'/><text x='100' y='36' text-anchor='middle' fill='#1e3a8a' font-size='14' font-family='Nunito'>b</text>
+            <rect x='136' y='14' width='56' height='36' rx='8' fill='#e0f2fe' stroke='#93c5fd'/><text x='164' y='36' text-anchor='middle' fill='#1e3a8a' font-size='14' font-family='Nunito'>suma</text>
+          </svg>
+          <div class='mini'>“Como Real” = puede guardar 2, 5.5, 10.2…</div>
+        </div>`;
+      const opts=[
+        {label:'Definir a,b,suma Como Real', ok:true, reason:'Correcto: tres variables para números reales.'},
+        {label:'Variables a b suma', ok:false, reason:'En PSeInt se usa la palabra <b>Definir</b>.'},
+        {label:'Crear a y b', ok:false, reason:'Falta <b>Definir</b> y el tipo <b>Como Real</b>.'}
+      ];
+      renderChoices('Misión 2: Crear variables','Ahora tú: marca cómo crearías las variables.', opts);
+      prev.onclick=()=>{ step=1; render(); };
+    }
+
+    // ===== Paso 3 — Entrada (Escribir + Leer) =====
+    function screen3(){
+      say('Paso 3 — <b>Entrada de datos</b>. <b class="kwE">Escribir</b> muestra el mensaje; el usuario lo lee. Luego <b class="kwE">Leer</b> guarda el número que el usuario escribe.<br><b>Ahora tú:</b> elige la opción correcta para pedir un número.');
+      view.innerHTML = `
+        <div class='anim-box'>
+          <svg viewBox="0 0 320 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="10" y="12" width="300" height="40" rx="8" fill="#eef2ff" stroke="#c7d2fe"/>
+            <text x="160" y="38" text-anchor="middle" fill="#1e3a8a" font-size="14" font-family="Nunito">Pantalla: Digite a:</text>
+          </svg>
+          <div class='mini'>Luego el programa guarda el número en <b>a</b> con <b>Leer a</b>.</div>
+        </div>`;
+      const opts=[
+        {label:'Escribir "Digite a:"; Leer a', ok:true, reason:'Correcto: primero muestra, luego guarda el número.'},
+        {label:'Leer "a"', ok:false, reason:'Las comillas son para texto, no para variables.'},
+        {label:'Mostrar a', ok:false, reason:'Eso solo enseña; no pide datos.'}
+      ];
+      renderChoices('Misión 3: Pedir el número','Ahora tú: selecciona la opción correcta.', opts);
+      prev.onclick=()=>{ step=2; render(); };
+    }
+
+    // ===== Paso 4 — Proceso (suma) =====
+    function screen4(){
+      say('Paso 4 — <b>Proceso</b>. Suma los números y guarda el resultado en <b>suma</b>. Usa la flecha <b>←</b> para “guardar en”.<br><b>Ahora tú:</b> elige la instrucción correcta.');
+      const opts=[
+        {label:'suma ← a + b', ok:true, reason:'Correcto: suma y guarda en la variable suma.'},
+        {label:'suma ← a - b', ok:false, reason:'Eso resta.'},
+        {label:'a ← b + suma', ok:false, reason:'Guarda en la variable equivocada.'}
+      ];
+      renderChoices('Misión 4: Hacer la suma','Ahora tú: elige la fórmula correcta.', opts);
+      prev.onclick=()=>{ step=3; render(); };
+    }
+
+    // ===== Paso 5 — Salida (Escribir) =====
+    function screen5(){
+      say('Paso 5 — <b>Salida</b>. Muestra el resultado al usuario con <b class="kwE">Escribir</b>.<br><b>Ahora tú:</b> selecciona cómo mostrarás el resultado.');
+      const opts=[
+        {label:'Escribir "La suma es:", suma', ok:true, reason:'Correcto: mensaje + valor.'},
+        {label:'Leer suma', ok:false, reason:'Leer es para entradas, no salidas.'},
+        {label:'Escribir suma + a', ok:false, reason:'Mejor mensaje claro con coma.'}
+      ];
+      renderChoices('Misión 5: Mostrar resultado','Ahora tú: elige cómo presentas la respuesta.', opts);
+      prev.onclick=()=>{ step=4; render(); };
+    }
+
+    // ===== Paso 6 — ORDEN GUIADO POR FASES =====
+    function screen6(){
+      // Items base en orden correcto
+      const start = `Algoritmo ${programName||'SumaDosNumeros'}`;
+      const itemsCorrect = [
+        start,
+        'Definir a,b,suma Como Real',
+        'Escribir "Digite a:"; Leer a',
+        'Escribir "Digite b:"; Leer b',
+        'suma ← a + b',
+        'Escribir "La suma es:", suma',
+        'FinAlgoritmo'
+      ];
+      let items = [...itemsCorrect];
+      // mezclar
+      for(let i=items.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [items[i],items[j]]=[items[j],items[i]]; }
+
+      let phase = 1; // 1:start/end, 2:variables, 3:entradas, 4:proceso, 5:salida
+
+      function renderPhase(){
+        clearFB();
+        const titles = {
+          1: 'Paso final — Parte 1: Coloca INICIO y FIN del algoritmo',
+          2: 'Parte 2: Ahora define las variables necesarias',
+          3: 'Parte 3: Coloca las ENTRADAS (Escribir/Leer a y b) en orden',
+          4: 'Parte 4: Coloca el PROCESO de la suma',
+          5: 'Parte 5: Coloca la SALIDA (Escribir resultado)'
+        };
+        const tips = {
+          1: 'Ahora tú: arrastra el renglón que inicia con "Algoritmo ..." al <b>primer lugar</b> y "FinAlgoritmo" al <b>último</b>.',
+          2: 'Ahora tú: lleva <b>Definir a,b,suma Como Real</b> justo después del inicio (posición 2).',
+          3: 'Ahora tú: pon primero <b>Escribir "Digite a:"; Leer a</b> y después <b>Escribir "Digite b:"; Leer b</b>.',
+          4: 'Ahora tú: coloca <b>suma ← a + b</b> después de las entradas.',
+          5: 'Ahora tú: al final de los pasos, coloca <b>Escribir "La suma es:", suma</b> antes de <b>FinAlgoritmo</b>.'
+        };
+
+        say(`${titles[phase]}<br>${tips[phase]}`);
+
+        // construir UI de arrastrar
+        view.innerHTML = `
+          <p class='sub'>Arrastra las tarjetas hasta cumplir esta parte. Los elementos correctos quedarán fijos y se verán más oscuros.</p>
+          <div class='sortable' id='list'>${items.map(t=>`<div class='tile' draggable='true' data-t='${t.replace(/</g,'&lt;').replace(/>/g,'&gt;')}'>${t}</div>`).join('')}</div>
+          <div class='kbar'>
+            <button class='btn btn-primary' id='checkPhase'>Validar esta parte</button>
+          </div>
+        `;
+
+        const tiles=[...document.querySelectorAll('.tile')];
+        let dragEl=null;
+        function isLocked(el){ return el.classList.contains('locked'); }
+
+        tiles.forEach(t=>{
+          t.addEventListener('dragstart',e=>{ if(isLocked(t)){ e.preventDefault(); return; } dragEl=t; t.classList.add('drag'); });
+          t.addEventListener('dragend',e=>{ dragEl=null; t.classList.remove('drag'); document.querySelectorAll('.tile').forEach(x=>x.classList.remove('drop')); });
+          t.addEventListener('dragover',e=>{ if(isLocked(t)) return; e.preventDefault(); t.classList.add('drop'); });
+          t.addEventListener('dragleave',()=> t.classList.remove('drop'));
+          t.addEventListener('drop',e=>{
+            e.preventDefault(); t.classList.remove('drop');
+            const list=$('list');
+            if(dragEl && dragEl!==t && !isLocked(t)){
+              const nodes=[...list.children];
+              const di=nodes.indexOf(dragEl), ti=nodes.indexOf(t);
+              if(di<ti) list.insertBefore(dragEl, t.nextSibling); else list.insertBefore(dragEl, t);
+            }
+            // actualizar arreglo items
+            const now=[...$('list').children].map(x=>x.getAttribute('data-t'));
+            items = now;
+          });
+        });
+
+        $('checkPhase').onclick = ()=>{
+          const arr=[...$('list').children].map(x=>x.textContent.trim());
+          let ok=false;
+          if(phase===1){
+            ok = (arr[0]===itemsCorrect[0] && arr[arr.length-1]===itemsCorrect[itemsCorrect.length-1]);
+            if(ok){
+              lockAndGlow(0); lockAndGlow(arr.length-1);
+              feedback('¡Excelente! Inicio y fin colocados.', true);
+              phase=2; setTimeout(renderPhase, 700);
+            } else { feedback('Revisa: el primer renglón debe iniciar con "Algoritmo ..." y el último debe ser "FinAlgoritmo".', false); }
+          }
+          else if(phase===2){
+            ok = (arr[1]===itemsCorrect[1]);
+            if(ok){ lockAndGlow(1); feedback('Variables definidas en el lugar correcto.', true); phase=3; setTimeout(renderPhase, 700);} else { feedback('La definición de variables debe ir en la posición 2.', false); }
+          }
+          else if(phase===3){
+            ok = (arr[2]===itemsCorrect[2] && arr[3]===itemsCorrect[3]);
+            if(ok){ lockAndGlow(2); lockAndGlow(3); feedback('Entradas en orden correcto.', true); phase=4; setTimeout(renderPhase, 700);} else { feedback('Primero "Digite a" y luego "Digite b".', false); }
+          }
+          else if(phase===4){
+            ok = (arr[4]===itemsCorrect[4]);
+            if(ok){ lockAndGlow(4); feedback('¡Suma colocada correctamente!', true); phase=5; setTimeout(renderPhase, 700);} else { feedback('Coloca "suma ← a + b" después de las entradas.', false); }
+          }
+          else if(phase===5){
+            ok = (arr[5]===itemsCorrect[5] && arr[6]===itemsCorrect[6]);
+            if(ok){ lockAndGlow(5); lockAndGlow(6); feedback('Salida y cierre listos. ¡Programa completo!', true); next.disabled=false; next.textContent='Ver mi programa completo'; next.onclick=()=>{ showFinal(itemsCorrect); }; }
+            else { feedback('Pon "Escribir \"La suma es:\", suma" antes de "FinAlgoritmo".', false); }
+          }
+        };
+
+        function lockAndGlow(idx){
+          const el = $('list').children[idx];
+          if(!el) return;
+          el.classList.add('locked','shine');
+          el.setAttribute('draggable','false');
+        }
+      }
+
+      renderPhase();
+      prev.onclick=()=>{ step=5; render(); };
+      next.disabled=true;
+    }
+
+    function showFinal(lines){
+      const raw = lines.join('\n');
+      const highlighted = raw
+        .replace(/^Algoritmo/gm,"<span class='kwA'>Algoritmo</span>")
+        .replace(/^Definir/gm,"<span class='kwD'>Definir</span>")
+        .replace(/^Escribir/gm,"<span class='kwE'>Escribir</span>")
+        .replace(/^FinAlgoritmo/gm,"<span class='kwF'>FinAlgoritmo</span>");
+      view.innerHTML = `<h3 class='title2'>🎉 ¡Misión 1 completada!</h3>
+        <p class='sub'>¡Excelente, mini‑programador! Conociste: <b>Algoritmo</b> / <b>FinAlgoritmo</b>, <b>Definir ... Como Real</b>, <b>Escribir/Leer</b> y la suma.</p>
+        <pre id='codeBox'><code>${highlighted}</code></pre>`;
+      say('Has completado tu primer algoritmo. ¡Vamos al mapa para desbloquear la siguiente misión!');
+      const codeBox = document.getElementById('codeBox');
+      typeInto(codeBox, raw, 14);
+
+      // Botones
+      prev.style.display='none';
+      next.textContent='Volver al mapa';
+      next.disabled=false;
+      next.onclick = ()=>{
+        // marcar como completada y desbloquear la siguiente
+        if(currentMission!==null){
+          missions[currentMission]='done';
+          if(currentMission+1 < MISSIONS_TOTAL && missions[currentMission+1]==='locked'){
+            missions[currentMission+1]='unlocked';
+          }
+          saveMissions();
+        }
+        goToMap();
+      };
+      backToMap.style.display='inline-block';
+      backToMap.onclick = ()=>{ goToMap(); };
+    }
+
+    // ===== Render genérico de opciones =====
+    function renderChoices(title, subtitle, options, onOk){
+      const icon = `<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><circle cx='12' cy='12' r='10' fill='#eef5ff'/><circle cx='12' cy='9' r='2' fill='#5b7bb3'/><rect x='11' y='12' width='2' height='6' rx='1' fill='#5b7bb3'/></svg>`;
+      const cards = shuffle([...options]).map(o=>{
+        const id = 'c_'+Math.random().toString(36).slice(2);
+        return { id, html:`<div class='card' id='${id}' data-ok='${o.ok}' data-reason='${encodeURIComponent(o.reason)}'>
+          <div class='row'>${icon}<div><div><b>${o.label}</b></div><div class='mini'>Toca para elegir</div></div></div>
+        </div>` };
+      });
+      view.innerHTML = `
+        ${title?`<h3 class='title2'>${title}</h3>`:''}
+        ${subtitle?`<p class='sub'>${subtitle}</p>`:''}
+        <div class='grid'>${cards.map(c=>c.html).join('')}</div>`;
+      next.disabled=true; prev.disabled=(step===0);
+      cards.forEach(c=>{
+        const el = document.getElementById(c.id);
+        el.addEventListener('click',()=>{
+          const ok = el.dataset.ok==='true';
+          const reason = decodeURIComponent(el.dataset.reason);
+          document.querySelectorAll('.card').forEach(k=>k.classList.remove('correct','wrong'));
+          if(ok){
+            el.classList.add('correct','shine');
+            feedback(reason,true);
+            next.disabled=false; next.onclick=()=>{ if(onOk) onOk(); step++; render(); };
+          }else{
+            el.classList.add('wrong');
+            feedback(reason,false); next.disabled=true;
+          }
+        });
+      });
+    }
+
+    const shuffle=(arr)=>{ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; };
+
+    function render(){
+      clearFB(); setProgress(); next.disabled=true;
+      switch(step){
+        case 0: screen0(); break;
+        case 1: screen1(); break;
+        case 2: screen2(); break;
+        case 3: screen3(); break;
+        case 4: screen4(); break;
+        case 5: screen5(); break;
+        case 6: screen6(); break;
+      }
+    }
+
+    // ===== init =====
+    loadMissions();
+    renderMap();
+    goToMap();
+  </script>
+</body>
+</html>
