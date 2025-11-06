@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drone Delivery Route · Bit Mission</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#0b1020; --bg2:#0f172a; --accent:#00eaff; --accent-dim:#0ab3c2; --ink:#e5f6ff;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:Poppins, sans-serif;
+  color:var(--ink);
+  background:radial-gradient(800px 500px at 20% 20%, #0e1a2f 0%, var(--bg1) 45%, var(--bg2) 100%);
+  overflow:hidden;
+}
+canvas{display:block;margin:auto;border:1px solid var(--accent);background:rgba(255,255,255,0.03);}
+h1{font-family:Orbitron, sans-serif;text-align:center;color:var(--accent);text-shadow:0 0 12px var(--accent);}
+#hud{
+  display:flex;justify-content:space-around;align-items:center;
+  font-family:Orbitron,sans-serif;
+  background:rgba(0,0,0,0.4);padding:8px 0;border-top:1px solid var(--accent-dim);
+}
+#hud span{min-width:130px;text-align:center;}
+footer{text-align:center;margin-top:6px;font-size:12px;color:var(--accent-dim);font-family:Orbitron;}
+#overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;
+  font-family:Orbitron;
+}
+button{
+  background:rgba(2,14,26,.75);border:1px solid var(--accent);color:var(--ink);
+  font-family:Orbitron;text-transform:uppercase;letter-spacing:.1em;
+  padding:10px 20px;border-radius:10px;cursor:pointer;margin-top:20px;
+}
+button:hover{filter:brightness(120%);}
+</style>
+</head>
+<body>
+<h1>🚁 Drone Delivery Route · Bit Mission</h1>
+<canvas id="game" width="500" height="500"></canvas>
+<div id="hud">
+  <span id="level">Level: Easy</span>
+  <span id="pillar">Pillar: Decomposition</span>
+  <span id="deliveries">Deliveries: 0</span>
+  <span id="battery">Battery: 100%</span>
+  <span id="timer">Time: 90s</span>
+</div>
+<footer>Aprendiendo con @LaProfeVivy</footer>
+
+<div id="overlay">
+  <h2>Select Difficulty</h2>
+  <button onclick="startGame('easy')">Easy</button>
+  <button onclick="startGame('medium')">Medium</button>
+  <button onclick="startGame('hard')">Hard</button>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+let grid=10, cell=canvas.width/grid;
+let drone, deliveries, obstacles, battery, timeLeft, level, timer, pillar, completed=0;
+
+const pillars=["Decomposition","Pattern Recognition","Abstraction","Algorithms"];
+
+function reset(levelName){
+  level=levelName;
+  battery=100;
+  timeLeft=levelName==="easy"?90:levelName==="medium"?70:50;
+  drone={x:0,y:0};
+  deliveries=[];
+  completed=0;
+  let numDeliveries=levelName==="easy"?3:levelName==="medium"?5:7;
+  let numObstacles=levelName==="easy"?0:levelName==="medium"?8:15;
+  // Generate deliveries
+  for(let i=0;i<numDeliveries;i++){
+    deliveries.push({x:rand(1,9),y:rand(1,9),done:false});
+  }
+  // Generate obstacles
+  obstacles=[];
+  for(let i=0;i<numObstacles;i++){
+    let ox=rand(0,9),oy=rand(0,9);
+    if((ox!==0||oy!==0)&&!deliveries.some(d=>d.x===ox&&d.y===oy)) obstacles.push({x:ox,y:oy});
+  }
+  pillar=pillars[Math.floor(Math.random()*pillars.length)];
+  draw();
+}
+
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+
+function drawGrid(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle="rgba(255,255,255,0.1)";
+  for(let i=0;i<=grid;i++){
+    ctx.beginPath();ctx.moveTo(i*cell,0);ctx.lineTo(i*cell,canvas.height);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,i*cell);ctx.lineTo(canvas.width,i*cell);ctx.stroke();
+  }
+}
+
+function drawDrone(){
+  ctx.fillStyle="#00ffcc";
+  ctx.fillRect(drone.x*cell+5,drone.y*cell+5,cell-10,cell-10);
+}
+
+function drawDeliveries(){
+  deliveries.forEach(d=>{
+    ctx.fillStyle=d.done?"#777":"#ffcc00";
+    ctx.beginPath();
+    ctx.arc(d.x*cell+cell/2,d.y*cell+cell/2,cell/4,0,Math.PI*2);
+    ctx.fill();
+  });
+}
+
+function drawObstacles(){
+  ctx.fillStyle="#ff3366";
+  obstacles.forEach(o=>{
+    ctx.fillRect(o.x*cell+6,o.y*cell+6,cell-12,cell-12);
+  });
+}
+
+function draw(){
+  drawGrid();
+  drawObstacles();
+  drawDeliveries();
+  drawDrone();
+  updateHUD();
+}
+
+function updateHUD(){
+  document.getElementById("level").textContent="Level: "+level.charAt(0).toUpperCase()+level.slice(1);
+  document.getElementById("pillar").textContent="Pillar: "+pillar;
+  document.getElementById("deliveries").textContent="Deliveries: "+completed+"/"+deliveries.length;
+  document.getElementById("battery").textContent="Battery: "+battery+"%";
+  document.getElementById("timer").textContent="Time: "+timeLeft+"s";
+}
+
+function move(e){
+  let nx=drone.x,ny=drone.y;
+  if(e.key==="ArrowUp") ny--;
+  else if(e.key==="ArrowDown") ny++;
+  else if(e.key==="ArrowLeft") nx--;
+  else if(e.key==="ArrowRight") nx++;
+  else return;
+  if(nx<0||ny<0||nx>=grid||ny>=grid) return;
+  if(obstacles.some(o=>o.x===nx&&o.y===ny)) return;
+  drone.x=nx;drone.y=ny;battery-=2;
+  checkDeliveries();
+  draw();
+}
+
+function checkDeliveries(){
+  deliveries.forEach(d=>{
+    if(!d.done && d.x===drone.x && d.y===drone.y){
+      d.done=true;completed++;
+      alert("📦 Delivery completed!");
+    }
+  });
+  if(completed===deliveries.length) endGame(true);
+}
+
+function tick(){
+  timeLeft--;
+  if(timeLeft<=0||battery<=0){endGame(false);}
+  draw();
+}
+
+function startGame(lvl){
+  document.getElementById("overlay").style.display="none";
+  reset(lvl);
+  clearInterval(timer);
+  timer=setInterval(tick,1000);
+  window.addEventListener("keydown",move);
+}
+
+function endGame(success){
+  clearInterval(timer);
+  window.removeEventListener("keydown",move);
+  let msg=success?`🎉 Mission Complete!\nYou mastered ${pillar}!`:`⛔ Mission Failed.\nTry again using better algorithms!`;
+  alert(msg);
+  document.getElementById("overlay").innerHTML=`<h2>${success?"Mission Complete!":"Mission Failed"}</h2><p>${msg}</p><button onclick="location.reload()">Play Again</button>`;
+  document.getElementById("overlay").style.display="flex";
+}
+
+</script>
+</body>
+</html>
 
