@@ -1,9 +1,17 @@
 
 
+<style
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tipos de Datos · PSeInt</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
-#app{border-radius:20px;overflow:hidden;background:#f8f4ff;font-family:'Nunito',sans-serif;}
+#app{border-radius:20px;overflow:hidden;background:#f8f4ff;font-family:'Nunito',sans-serif;max-width:600px;margin:0 auto;}
 .hdr{background:#7c3aed;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
 .hdr-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;}
 .hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;}
@@ -86,9 +94,9 @@
 .opt.wrong{background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:24px;margin-bottom:4px;}
-.fb-ok{color:#16a34a;} .fb-err{color:#dc2626;}
+.fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
 .delta{font-size:22px;font-weight:800;text-align:center;min-height:28px;margin-bottom:4px;}
-.delta.up{color:#16a34a;} .delta.down{color:#dc2626;}
+.delta.up{color:#16a34a;}.delta.down{color:#dc2626;}
 .result{text-align:center;padding:14px 8px;}
 .res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#7c3aed;margin-bottom:4px;}
 .res-stars{font-size:34px;margin:8px 0;}
@@ -100,6 +108,7 @@
 .rbtn{background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #5b21b6;margin:4px;transition:transform .1s;}
 .rbtn:hover{transform:translateY(-2px);}
 .rbtn.sec{background:#ede9fe;color:#7c3aed;box-shadow:0 4px 0 #c4b5fd;}
+.uso-badge{display:inline-block;background:#ede9fe;color:#7c3aed;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:10px;}
 </style>
 
 <div id="app">
@@ -113,11 +122,12 @@
   </div>
 
   <div class="panel active" id="panel-learn">
-    <div class="progress-label" id="slide-label">Tarjeta 1 de 5 — Que es texto</div>
+    <div class="progress-label" id="slide-label">Tarjeta 1 de 5 — ¿Qué es un dato de texto?</div>
 
-    <!-- SLIDE 0: QUE ES TEXTO -->
+    <!-- SLIDE 0: QUÉ ES TEXTO -->
     <div class="slide active" id="slide-0">
       <div class="slide-card sc-intro">
+        <div class="uso-badge">Uso en clase</div>
         <div class="slide-svg-wrap">
           <svg width="110" height="90" viewBox="0 0 110 90" xmlns="http://www.w3.org/2000/svg">
             <rect x="8" y="10" width="94" height="70" rx="10" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/>
@@ -129,19 +139,19 @@
             <text x="86" y="29" text-anchor="middle" font-family="Fredoka One,cursive" font-size="16" fill="#78350f">A</text>
           </svg>
         </div>
-        <div class="slide-type">Que es un Dato de Texto</div>
-        <div class="slide-alias">El tipo mas usado en programacion</div>
-        <div class="slide-rule">Un dato de texto es cualquier informacion formada por letras, palabras, frases o simbolos que queremos guardar como mensaje, no como numero.</div>
-        <div class="slide-desc">Cuando un programa guarda un nombre, una direccion, un mensaje de chat o un codigo como "ABC-01", esta usando un dato de tipo texto. No sirve para hacer sumas, solo para leer y mostrar informacion.</div>
+        <div class="slide-type">¿Qué es un dato de texto?</div>
+        <div class="slide-alias">El tipo más usado en programación</div>
+        <div class="slide-rule">Un dato de texto es cualquier información formada por letras, palabras, frases o símbolos que queremos guardar como mensaje, no como número.</div>
+        <div class="slide-desc">Cuando un programa guarda un nombre, una dirección, un mensaje de chat o un código como "ABC-01", está usando un dato de tipo texto. No sirve para hacer sumas, solo para leer y mostrar información.</div>
         <div class="pills">
           <span class="pill">Nombre</span>
-          <span class="pill">Direccion</span>
+          <span class="pill">Dirección</span>
           <span class="pill">Mensaje</span>
-          <span class="pill">Codigo</span>
+          <span class="pill">Código</span>
           <span class="pill">Color</span>
         </div>
-        <div class="slide-rule">Ejemplos del mundo real: el nombre de un estudiante, la direccion de una tienda, el color favorito de un usuario, un numero de placa como "ABC-123".</div>
-        <div class="next-hint">En la siguiente tarjeta veras como se escribe en codigo...</div>
+        <div class="slide-rule">Ejemplos del mundo real: el nombre de un estudiante, la dirección de una tienda, el color favorito de un usuario, un número de placa como "ABC-123".</div>
+        <div class="next-hint">En la siguiente tarjeta verás cómo se escribe en código...</div>
       </div>
     </div>
 
@@ -156,24 +166,24 @@
             <text x="68" y="38" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">"</text>
             <line x1="14" y1="48" x2="106" y2="48" stroke="#d946ef" stroke-width="1" opacity=".4"/>
             <text x="18" y="64" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">'</text>
-            <text x="26" y="64" font-family="monospace" font-size="13" fill="#86198f">Bogota</text>
-            <text x="80" y="64" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">'</text>
+            <text x="26" y="64" font-family="monospace" font-size="13" fill="#86198f">Bogotá</text>
+            <text x="82" y="64" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">'</text>
             <rect x="86" y="5" width="26" height="20" rx="5" fill="#d946ef"/>
             <text x="99" y="19" text-anchor="middle" font-family="Fredoka One,cursive" font-size="13" fill="#fff">str</text>
           </svg>
         </div>
         <div class="slide-type">String — Cadena de texto</div>
-        <div class="slide-alias">Tambien: char · varchar · texto · str</div>
-        <div class="slide-rule">Regla: siempre va entre comillas " " o ' '. Si tiene comillas es String, sin importar que haya adentro.</div>
-        <div class="slide-desc">Asi se escribe un dato de texto en codigo. Las comillas le dicen al computador: esto es texto, no lo calcules. Incluso un numero entre comillas se convierte en texto.</div>
+        <div class="slide-alias">También: char · varchar · texto · str</div>
+        <div class="slide-rule">Regla: siempre va entre comillas " " o ' '. Si tiene comillas es String, sin importar qué haya adentro.</div>
+        <div class="slide-desc">Así se escribe un dato de texto en código. Las comillas le dicen al computador: "esto es texto, no lo calcules". Incluso un número entre comillas se convierte en texto.</div>
         <div class="pills">
           <span class="pill">"Hola"</span><span class="pill">"Colombia"</span><span class="pill">'Gato'</span><span class="pill">"abc123"</span><span class="pill">"2024"</span><span class="pill">"true"</span>
         </div>
         <div class="code-box">
-          nombre = <span style="color:#a21caf">"Sofia"</span><br>
-          ciudad = <span style="color:#a21caf">'Bogota'</span><br>
+          nombre = <span style="color:#a21caf">"Sofía"</span><br>
+          ciudad = <span style="color:#a21caf">'Bogotá'</span><br>
           placa = <span style="color:#a21caf">"ABC-123"</span><br>
-          num_texto = <span style="color:#a21caf">"42"</span> <span style="color:#888">← texto, no numero!</span>
+          num_texto = <span style="color:#a21caf">"42"</span> <span style="color:#888">← texto, ¡no número!</span>
         </div>
       </div>
     </div>
@@ -190,10 +200,10 @@
             <text x="55" y="27" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#fff">int / integer</text>
           </svg>
         </div>
-        <div class="slide-type">Integer — Numero Entero</div>
-        <div class="slide-alias">Tambien: int · long · short · byte</div>
-        <div class="slide-rule">Regla: numero completo, sin punto decimal y sin comillas. Puede ser positivo, negativo o cero.</div>
-        <div class="slide-desc">Se usa cuando necesitamos contar cosas exactas: edades, posiciones, cantidades, anos. No tiene parte decimal porque representa unidades completas.</div>
+        <div class="slide-type">Integer — Número entero</div>
+        <div class="slide-alias">También: int · long · short · byte</div>
+        <div class="slide-rule">Regla: número completo, sin punto decimal y sin comillas. Puede ser positivo, negativo o cero.</div>
+        <div class="slide-desc">Se usa cuando necesitamos contar cosas exactas: edades, posiciones, cantidades, años. No tiene parte decimal porque representa unidades completas.</div>
         <div class="pills">
           <span class="pill">5</span><span class="pill">-3</span><span class="pill">100</span><span class="pill">0</span><span class="pill">-999</span><span class="pill">2024</span>
         </div>
@@ -221,10 +231,10 @@
             <text x="60" y="27" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#fff">float / double / real</text>
           </svg>
         </div>
-        <div class="slide-type">Float / Double — Numero Real</div>
-        <div class="slide-alias">Tambien: float · double · decimal · real</div>
-        <div class="slide-rule">Regla: tiene un punto (.) decimal y sin comillas. Ojo! 1.0 tambien es float aunque el decimal sea cero.</div>
-        <div class="slide-desc">Se usa para medidas, precios, promedios y cualquier valor que necesite decimales. Double tiene mas precision que float (mas decimales exactos).</div>
+        <div class="slide-type">Float / Double — Número real</div>
+        <div class="slide-alias">También: float · double · decimal · real</div>
+        <div class="slide-rule">Regla: tiene un punto (.) decimal y va sin comillas. ¡Ojo! 1.0 también es float aunque el decimal sea cero.</div>
+        <div class="slide-desc">Se usa para medidas, precios, promedios y cualquier valor que necesite decimales. Double tiene más precisión que float (más decimales exactos).</div>
         <div class="pills">
           <span class="pill">3.14</span><span class="pill">-0.5</span><span class="pill">9.99</span><span class="pill">1.0</span><span class="pill">100.75</span><span class="pill">-2.8</span>
         </div>
@@ -253,9 +263,9 @@
           </svg>
         </div>
         <div class="slide-type">Boolean — Booleano</div>
-        <div class="slide-alias">Tambien: bool · boolean · logico · bit</div>
-        <div class="slide-rule">Regla: SOLO puede ser true (verdadero) o false (falso). Sin comillas, sin numeros. Solo esas dos palabras.</div>
-        <div class="slide-desc">Como un interruptor de luz: solo tiene dos estados. Se usa para condiciones, permisos y estados como activo/inactivo, si/no, encendido/apagado.</div>
+        <div class="slide-alias">También: bool · boolean · lógico · bit</div>
+        <div class="slide-rule">Regla: SOLO puede ser true (verdadero) o false (falso). Sin comillas, sin números. Solo esas dos palabras.</div>
+        <div class="slide-desc">Como un interruptor de luz: solo tiene dos estados. Se usa para condiciones, permisos y estados como activo/inactivo, sí/no, encendido/apagado.</div>
         <div class="pills">
           <span class="pill">true</span><span class="pill">false</span>
         </div>
@@ -263,7 +273,7 @@
           esMayor = <span style="color:#15803d">true</span><br>
           tieneDescuento = <span style="color:#15803d">false</span><br>
           estaActivo = <span style="color:#15803d">true</span><br>
-          <span style="color:#888">"true" con comillas → es String, no Boolean</span>
+          <span style="color:#888">"true" con comillas → es String, ¡no Boolean!</span>
         </div>
       </div>
     </div>
@@ -287,9 +297,15 @@
 </div>
 
 <script>
-let curSlide=0,totalSlides=5;
-let playerName='',score=0,curQ=0,questions=[],answered=false;
-const SLIDE_NAMES=['Que es texto','String (cadena)','Integer (entero)','Float (real)','Boolean'];
+let curSlide=0, totalSlides=5;
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+const SLIDE_NAMES=[
+  '¿Qué es un dato de texto?',
+  'String (cadena)',
+  'Integer (entero)',
+  'Float (real)',
+  'Boolean'
+];
 
 function goTab(t){
   ['learn','play'].forEach(x=>{
@@ -301,16 +317,16 @@ function goTab(t){
 
 function moveSlide(dir){goSlide(curSlide+dir);}
 function goSlide(n){
-  if(n<0||n>=totalSlides)return;
+  if(n<0||n>=totalSlides) return;
   document.getElementById('slide-'+curSlide).classList.remove('active');
   document.querySelectorAll('.dot')[curSlide].classList.remove('active');
   curSlide=n;
   document.getElementById('slide-'+curSlide).classList.add('active');
   document.querySelectorAll('.dot')[curSlide].classList.add('active');
   document.getElementById('slide-label').textContent='Tarjeta '+(curSlide+1)+' de '+totalSlides+' — '+SLIDE_NAMES[curSlide];
-  document.getElementById('btn-prev').disabled=curSlide===0;
+  document.getElementById('btn-prev').disabled=(curSlide===0);
   const nb=document.getElementById('btn-next');
-  if(curSlide===totalSlides-1){nb.textContent='A jugar!';nb.onclick=()=>goTab('play');}
+  if(curSlide===totalSlides-1){nb.textContent='¡A jugar!';nb.onclick=()=>goTab('play');}
   else{nb.textContent='Siguiente';nb.onclick=()=>moveSlide(1);}
 }
 
@@ -327,33 +343,33 @@ const SVG_OPTS={
 };
 
 const OPTS=[
-  {k:'s',label:'String',sub:'Cadena / texto',cls:'o-s'},
-  {k:'i',label:'Entero',sub:'int / integer',cls:'o-i'},
-  {k:'f',label:'Real',sub:'float / double',cls:'o-f'},
-  {k:'b',label:'Boolean',sub:'true / false',cls:'o-b'},
+  {k:'s', label:'String',  sub:'Cadena / texto',  cls:'o-s'},
+  {k:'i', label:'Entero',  sub:'int / integer',   cls:'o-i'},
+  {k:'f', label:'Real',    sub:'float / double',  cls:'o-f'},
+  {k:'b', label:'Boolean', sub:'true / false',    cls:'o-b'},
 ];
 
 const QS=[
-  {v:'"Hola"',a:'s',h:'Tiene comillas'},
-  {v:'42',a:'i',h:'Sin punto ni comillas'},
-  {v:'3.14',a:'f',h:'Tiene punto decimal'},
-  {v:'true',a:'b',h:'true o false'},
-  {v:'"Colombia"',a:'s',h:'Entre comillas'},
-  {v:'-7',a:'i',h:'Negativo sin punto'},
-  {v:'false',a:'b',h:'Valor booleano'},
-  {v:'9.99',a:'f',h:'Tiene decimales'},
-  {v:'"abc123"',a:'s',h:'Comillas = string siempre'},
-  {v:'0',a:'i',h:'Cero sin punto'},
-  {v:'1.0',a:'f',h:'Punto decimal aunque sea .0'},
-  {v:'"true"',a:'s',h:'Comillas = string, no boolean'},
-  {v:'100',a:'i',h:'Sin punto ni comillas'},
-  {v:'-0.5',a:'f',h:'Decimal negativo'},
-  {v:'"2024"',a:'s',h:'Comillas = string'},
-  {v:'19.75',a:'f',h:'Numero con decimales'},
-  {v:'-50',a:'i',h:'Entero negativo'},
-  {v:'"Hola mundo"',a:'s',h:'Frase = string'},
-  {v:'0.0',a:'f',h:'Punto decimal = float'},
-  {v:'false',a:'b',h:'Solo true o false'},
+  {v:'"Hola"',       a:'s', h:'Tiene comillas → es texto'},
+  {v:'42',           a:'i', h:'Sin punto ni comillas → entero'},
+  {v:'3.14',         a:'f', h:'Tiene punto decimal → real'},
+  {v:'true',         a:'b', h:'Solo true o false → booleano'},
+  {v:'"Colombia"',   a:'s', h:'Entre comillas → siempre texto'},
+  {v:'-7',           a:'i', h:'Negativo sin punto → entero'},
+  {v:'false',        a:'b', h:'Valor booleano'},
+  {v:'9.99',         a:'f', h:'Tiene decimales → real'},
+  {v:'"abc123"',     a:'s', h:'Comillas = String siempre'},
+  {v:'0',            a:'i', h:'Cero sin punto → entero'},
+  {v:'1.0',          a:'f', h:'Punto decimal aunque sea .0 → real'},
+  {v:'"true"',       a:'s', h:'Comillas = String, ¡no Boolean!'},
+  {v:'100',          a:'i', h:'Sin punto ni comillas → entero'},
+  {v:'-0.5',         a:'f', h:'Decimal negativo → real'},
+  {v:'"2024"',       a:'s', h:'Comillas = String'},
+  {v:'19.75',        a:'f', h:'Número con decimales → real'},
+  {v:'-50',          a:'i', h:'Entero negativo'},
+  {v:'"Hola mundo"', a:'s', h:'Frase = String'},
+  {v:'0.0',          a:'f', h:'Punto decimal → real'},
+  {v:'false',        a:'b', h:'Solo true o false → booleano'},
 ];
 
 function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
@@ -362,10 +378,10 @@ function showNameScreen(){
   document.getElementById('play-content').innerHTML=`
     <div class="name-screen">
       <div style="display:flex;justify-content:center;margin-bottom:12px">${SVG_MASCOT_IDLE}</div>
-      <div class="name-title">Bienvenido al quiz!</div>
+      <div class="name-title">¡Bienvenido al quiz!</div>
       <div class="name-sub">Escribe tu nombre completo para comenzar.<br><b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b></div>
       <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="50">
-      <button class="start-btn" onclick="startQuiz()">Comenzar!</button>
+      <button class="start-btn" onclick="startQuiz()">¡Comenzar!</button>
     </div>`;
   setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
 }
@@ -373,10 +389,10 @@ function showNameScreen(){
 function startQuiz(){
   const inp=document.getElementById('name-inp');
   const n=inp?inp.value.trim():'';
-  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='Escribe tu nombre primero!';return;}
-  playerName=n;score=0;curQ=0;answered=false;
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='¡Escribe tu nombre primero!';return;}
+  playerName=n; score=0; curQ=0; answered=false;
   questions=shuffle(QS).slice(0,12);
-  updHdr();renderQ();
+  updHdr(); renderQ();
 }
 
 function updHdr(){
@@ -402,7 +418,7 @@ function renderQ(){
     <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
     <div class="mascot-wrap" id="mc">${SVG_MASCOT_IDLE}</div>
     <div class="q-box">
-      <div class="q-label">Que tipo de dato es?</div>
+      <div class="q-label">¿Qué tipo de dato es?</div>
       <div class="q-val">${q.v}</div>
       <div class="q-hint">${q.h}</div>
     </div>
@@ -411,8 +427,8 @@ function renderQ(){
     <div class="feedback" id="fb"></div>`;
 }
 
-function checkAns(ans,btn){
-  if(answered)return;
+function checkAns(ans, btn){
+  if(answered) return;
   answered=true;
   const q=questions[curQ];
   const fb=document.getElementById('fb');
@@ -421,19 +437,19 @@ function checkAns(ans,btn){
   document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
   if(ans===q.a){
     btn.classList.add('correct');
-    score+=100;updHdr();
-    fb.textContent='Correcto!';fb.className='feedback fb-ok';
-    delta.textContent='+100 puntos';delta.className='delta up';
+    score+=100; updHdr();
+    fb.textContent='¡Correcto!'; fb.className='feedback fb-ok';
+    delta.textContent='+100 puntos'; delta.className='delta up';
     mc.innerHTML=SVG_MASCOT_OK;
   } else {
     btn.classList.add('wrong');
-    score=Math.max(0,score-10);updHdr();
+    score=Math.max(0,score-10); updHdr();
     const correct=OPTS.find(o=>o.k===q.a);
-    fb.textContent='Era: '+correct.label;fb.className='feedback fb-err';
-    delta.textContent='-10 puntos';delta.className='delta down';
+    fb.textContent='Era: '+correct.label; fb.className='feedback fb-err';
+    delta.textContent='-10 puntos'; delta.className='delta down';
     mc.innerHTML=SVG_MASCOT_ERR;
     document.querySelectorAll('.opt').forEach(b=>{
-      if(b.classList.contains('o-'+q.a))b.classList.add('correct');
+      if(b.classList.contains('o-'+q.a)) b.classList.add('correct');
     });
   }
   setTimeout(()=>{curQ++;renderQ();},1900);
@@ -446,11 +462,11 @@ function showResult(){
   const max=questions.length*100;
   const pct=Math.round((score/max)*100);
   const stars=pct>=90?'★★★':pct>=60?'★★':'★';
-  const msg=pct>=90?'Eres un experto en tipos de datos!':pct>=60?'Muy bien! Sigue practicando':'No te rindas! Repasa y vuelve a intentarlo';
+  const msg=pct>=90?'¡Eres un experto en tipos de datos!':pct>=60?'¡Muy bien! Sigue practicando.':'¡No te rindas! Repasa las tarjetas y vuelve a intentarlo.';
   document.getElementById('play-content').innerHTML=`
     <div class="result">
       <div style="display:flex;justify-content:center;margin-bottom:10px">${SVG_MASCOT_WIN}</div>
-      <div class="res-title">Juego terminado!</div>
+      <div class="res-title">¡Juego terminado!</div>
       <div class="res-stars" style="color:#eab308">${stars}</div>
       <div style="font-size:13px;color:#888;margin-bottom:10px;">${msg}</div>
       <div class="res-card">
@@ -467,8 +483,9 @@ function showResult(){
 }
 
 function rePlay(){
-  score=0;curQ=0;answered=false;
+  score=0; curQ=0; answered=false;
   questions=shuffle(QS).slice(0,12);
-  updHdr();renderQ();
+  updHdr(); renderQ();
 }
 </script>
+</html>
