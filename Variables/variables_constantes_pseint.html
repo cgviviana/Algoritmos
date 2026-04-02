@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Variables y Constantes en PSeInt</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+#app{border-radius:20px;overflow:hidden;background:#f8f4ff;font-family:'Nunito',sans-serif;max-width:600px;margin:0 auto;}
+.hdr{background:#7c3aed;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;}
+.hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;}
+.tabs{display:flex;background:#ede9fe;}
+.tab{flex:1;padding:10px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;border:none;background:transparent;color:#7c3aed;border-bottom:3px solid transparent;transition:all .2s;font-family:'Nunito',sans-serif;}
+.tab.active{background:#fff;border-bottom:3px solid #7c3aed;}
+.panel{display:none;padding:18px;}
+.panel.active{display:block;}
+.slide{display:none;animation:fadeIn .35s ease;}
+.slide.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+.slide-card{border-radius:18px;padding:20px 18px;border:3px solid;margin-bottom:14px;}
+.sc-intro{background:#fefce8;border-color:#eab308;}
+.sc-var  {background:#eff6ff;border-color:#3b82f6;}
+.sc-const{background:#fff7ed;border-color:#f97316;}
+.sc-decl {background:#fdf4ff;border-color:#d946ef;}
+.sc-when {background:#f0fdf4;border-color:#22c55e;}
+.sc-tipos{background:#fef9c3;border-color:#ca8a04;}
+.slide-svg-wrap{display:flex;justify-content:center;margin-bottom:12px;}
+.slide-type{font-family:'Fredoka One',cursive;font-size:21px;text-align:center;margin-bottom:3px;}
+.sc-intro .slide-type{color:#92400e;}
+.sc-var   .slide-type{color:#1d4ed8;}
+.sc-const .slide-type{color:#c2410c;}
+.sc-decl  .slide-type{color:#a21caf;}
+.sc-when  .slide-type{color:#15803d;}
+.sc-tipos .slide-type{color:#854d0e;}
+.slide-alias{text-align:center;font-size:12px;font-weight:700;color:#888;margin-bottom:10px;}
+.slide-rule{border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;margin-bottom:12px;line-height:1.5;}
+.sc-intro .slide-rule{background:#fef08a;color:#78350f;}
+.sc-var   .slide-rule{background:#bfdbfe;color:#1e40af;}
+.sc-const .slide-rule{background:#fed7aa;color:#9a3412;}
+.sc-decl  .slide-rule{background:#f0abfc;color:#86198f;}
+.sc-when  .slide-rule{background:#bbf7d0;color:#166534;}
+.sc-tipos .slide-rule{background:#fef08a;color:#78350f;}
+.slide-desc{font-size:13px;color:#444;line-height:1.55;margin-bottom:12px;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.pill{font-size:12px;font-weight:700;padding:4px 11px;border-radius:999px;font-family:monospace;}
+.sc-intro .pill{background:#fef08a;color:#78350f;}
+.sc-var   .pill{background:#bfdbfe;color:#1e40af;}
+.sc-const .pill{background:#fed7aa;color:#9a3412;}
+.sc-decl  .pill{background:#f0abfc;color:#86198f;}
+.sc-when  .pill{background:#bbf7d0;color:#166534;}
+.sc-tipos .pill{background:#fef08a;color:#854d0e;}
+.code-box{font-family:monospace;font-size:12px;background:rgba(0,0,0,0.06);border-radius:8px;padding:8px 10px;line-height:1.9;}
+.next-hint{text-align:center;font-size:12px;color:#a855f7;font-weight:700;margin-top:8px;}
+.progress-label{font-size:12px;color:#7c3aed;font-weight:700;text-align:center;margin-bottom:10px;background:#ede9fe;border-radius:999px;padding:5px 14px;}
+.carousel-nav{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.nav-btn{font-family:'Fredoka One',cursive;font-size:15px;padding:9px 20px;border-radius:12px;border:none;cursor:pointer;transition:transform .15s;}
+.nav-prev{background:#ede9fe;color:#7c3aed;box-shadow:0 3px 0 #c4b5fd;}
+.nav-next{background:#7c3aed;color:#fff;box-shadow:0 3px 0 #5b21b6;}
+.nav-btn:hover{transform:translateY(-2px);}
+.nav-btn:active{transform:translateY(1px);}
+.nav-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.dots{display:flex;gap:7px;}
+.dot{width:10px;height:10px;border-radius:50%;background:#d8b4fe;transition:all .2s;cursor:pointer;}
+.dot.active{background:#7c3aed;transform:scale(1.3);}
+.name-screen{background:#fff;border-radius:14px;border:1.5px solid #e9d5ff;padding:20px;text-align:center;}
+.name-title{font-family:'Fredoka One',cursive;font-size:20px;color:#7c3aed;margin-bottom:6px;}
+.name-sub{font-size:13px;color:#888;margin-bottom:14px;}
+.name-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid #d8b4fe;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#1e1b4b;margin-bottom:12px;}
+.name-input:focus{border-color:#7c3aed;}
+.start-btn{width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #5b21b6;transition:transform .1s;}
+.start-btn:hover{transform:translateY(-2px);}
+.quiz-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-counter{font-size:13px;font-weight:700;color:#888;}
+.q-score-lbl{font-family:'Fredoka One',cursive;font-size:16px;color:#7c3aed;}
+.prog-bar{background:#e9d5ff;border-radius:999px;height:8px;margin-bottom:14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:#7c3aed;transition:width .4s;}
+.mascot-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+.q-box{background:#fff;border-radius:14px;border:2px solid #e9d5ff;padding:16px;text-align:center;margin-bottom:14px;}
+.q-label{font-size:11px;font-weight:700;color:#a855f7;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.q-val{font-family:monospace;font-size:15px;color:#1e1b4b;margin-bottom:3px;line-height:1.6;white-space:pre-line;text-align:left;}
+.q-hint{font-size:12px;color:#aaa;text-align:center;margin-top:6px;}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.opt{padding:10px 6px;border-radius:12px;border:2.5px solid;font-family:'Fredoka One',cursive;font-size:13px;cursor:pointer;transition:transform .15s;box-shadow:0 3px 0 rgba(0,0,0,.07);display:flex;flex-direction:column;align-items:center;gap:4px;}
+.opt:hover:not(:disabled){transform:translateY(-2px);}
+.opt:active:not(:disabled){transform:translateY(1px);}
+.opt:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.o-v{border-color:#3b82f6;color:#1d4ed8;background:#eff6ff;}
+.o-c{border-color:#f97316;color:#c2410c;background:#fff7ed;}
+.opt.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;transform:scale(1.04);}
+.opt.wrong{background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opts4{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px;}
+.opt4{padding:10px 14px;border-radius:12px;border:2.5px solid #d8b4fe;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:transform .15s;background:#fff;color:#1e1b4b;text-align:left;}
+.opt4:hover:not(:disabled){transform:translateY(-2px);border-color:#7c3aed;background:#ede9fe;}
+.opt4:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.opt4.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;}
+.opt4.wrong{background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+.feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:24px;margin-bottom:4px;}
+.fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
+.delta{font-size:22px;font-weight:800;text-align:center;min-height:28px;margin-bottom:4px;}
+.delta.up{color:#16a34a;}.delta.down{color:#dc2626;}
+.result{text-align:center;padding:14px 8px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#7c3aed;margin-bottom:4px;}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{background:#fff;border-radius:14px;border:1.5px solid #e9d5ff;padding:16px;margin:12px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid #f3e8ff;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#7c3aed;}
+.res-lbl{color:#888;font-weight:600;}
+.res-val{font-weight:700;color:#1e1b4b;}
+.rbtn{background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #5b21b6;margin:4px;transition:transform .1s;}
+.rbtn:hover{transform:translateY(-2px);}
+.rbtn.sec{background:#ede9fe;color:#7c3aed;box-shadow:0 4px 0 #c4b5fd;}
+.uso-badge{display:inline-block;background:#ede9fe;color:#7c3aed;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:10px;}
+.kw-def{color:#7c3aed;font-weight:bold;}
+.kw-como{color:#d946ef;font-weight:bold;}
+.kw-tipo{color:#c2410c;font-weight:bold;}
+.kw-str{color:#15803d;}
+.kw-num{color:#1d4ed8;}
+.kw-comentario{color:#999;font-style:italic;}
+</style>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-title">Variables y Constantes · PSeInt</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-learn" onclick="goTab('learn')">Aprender</button>
+    <button class="tab" id="tab-play" onclick="goTab('play')">Jugar</button>
+  </div>
+
+  <!-- ====== PANEL APRENDER ====== -->
+  <div class="panel active" id="panel-learn">
+    <div class="progress-label" id="slide-label">Tarjeta 1 de 6 — Que es una variable</div>
+
+    <!-- SLIDE 0: QUE ES UNA VARIABLE -->
+    <div class="slide active" id="slide-0">
+      <div class="slide-card sc-intro">
+        <div class="uso-badge">Uso en clase · PSeInt</div>
+        <div class="slide-svg-wrap">
+          <svg width="120" height="90" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="18" width="46" height="54" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/>
+            <text x="33" y="38" text-anchor="middle" font-family="Fredoka One,cursive" font-size="11" fill="#92400e">edad</text>
+            <rect x="18" y="42" width="30" height="18" rx="5" fill="#eab308" opacity=".5"/>
+            <text x="33" y="55" text-anchor="middle" font-family="Fredoka One,cursive" font-size="14" fill="#78350f">25</text>
+            <path d="M62 45 L76 45" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" marker-end="url(#a0)"/>
+            <defs><marker id="a0" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#7c3aed" stroke-width="1.5"/></marker></defs>
+            <rect x="78" y="28" width="34" height="34" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="95" y="49" text-anchor="middle" font-family="Fredoka One,cursive" font-size="14" fill="#78350f">30</text>
+            <text x="33" y="82" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#92400e" font-weight="800">antes</text>
+            <text x="95" y="82" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#92400e" font-weight="800">despues</text>
+          </svg>
+        </div>
+        <div class="slide-type">Que es una Variable</div>
+        <div class="slide-alias">El concepto base de la programacion</div>
+        <div class="slide-rule">Una variable es un espacio en la memoria del computador con un nombre, que guarda un valor que PUEDE CAMBIAR mientras el algoritmo se ejecuta.</div>
+        <div class="slide-desc">Piensa en una variable como una caja etiquetada: puedes meter algo, sacarlo y cambiarlo. En PSeInt, toda variable debe declararse antes de usarse, indicando su nombre y tipo de dato.</div>
+        <div class="pills">
+          <span class="pill">edad</span><span class="pill">nombre</span><span class="pill">puntaje</span><span class="pill">temperatura</span><span class="pill">precio</span>
+        </div>
+        <div class="next-hint">Siguiente: como se declara en PSeInt...</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 1: DECLARAR VARIABLE EN PSEINT -->
+    <div class="slide" id="slide-1">
+      <div class="slide-card sc-var">
+        <div class="slide-svg-wrap">
+          <svg width="150" height="80" viewBox="0 0 150 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="22" width="30" height="26" rx="6" fill="#f0abfc" stroke="#d946ef" stroke-width="1.5"/>
+            <text x="17" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#86198f">Definir</text>
+            <rect x="36" y="22" width="36" height="26" rx="6" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="54" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#1d4ed8">nombre</text>
+            <rect x="76" y="22" width="26" height="26" rx="6" fill="#fef08a" stroke="#eab308" stroke-width="1.5"/>
+            <text x="89" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#92400e">Como</text>
+            <rect x="106" y="22" width="42" height="26" rx="6" fill="#bbf7d0" stroke="#22c55e" stroke-width="1.5"/>
+            <text x="127" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#15803d">Caracter</text>
+            <text x="17" y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#86198f" font-weight="800">palabra clave</text>
+            <text x="54" y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#1d4ed8" font-weight="800">identificador</text>
+            <text x="89" y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#92400e" font-weight="800">conector</text>
+            <text x="127" y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#15803d" font-weight="800">tipo de dato</text>
+          </svg>
+        </div>
+        <div class="slide-type">Declarar variable en PSeInt</div>
+        <div class="slide-alias">Sintaxis: Definir &lt;nombre&gt; Como &lt;tipo&gt;</div>
+        <div class="slide-rule">En PSeInt se usa la palabra Definir seguida del nombre de la variable, la palabra Como y el tipo de dato. Luego se asigna el valor con la flecha &lt;-</div>
+        <div class="slide-desc">La declaracion le dice al algoritmo: "reserva un espacio en memoria con este nombre y este tipo". La asignacion pone un valor en ese espacio. Son dos pasos distintos.</div>
+        <div class="pills">
+          <span class="pill">Definir edad Como Entero</span>
+          <span class="pill">edad &lt;- 25</span>
+        </div>
+        <div class="code-box">
+<span class="kw-def">Definir</span> edad <span class="kw-como">Como</span> <span class="kw-tipo">Entero</span><br>
+<span class="kw-def">Definir</span> nombre <span class="kw-como">Como</span> <span class="kw-tipo">Caracter</span><br>
+<span class="kw-def">Definir</span> precio <span class="kw-como">Como</span> <span class="kw-tipo">Real</span><br><br>
+edad &lt;- <span class="kw-num">25</span>              <span class="kw-comentario">// asignacion</span><br>
+nombre &lt;- <span class="kw-str">"Ana"</span>         <span class="kw-comentario">// asignacion</span><br>
+edad &lt;- <span class="kw-num">30</span>              <span class="kw-comentario">// cambia el valor</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: CONSTANTE EN PSEINT -->
+    <div class="slide" id="slide-2">
+      <div class="slide-card sc-const">
+        <div class="slide-svg-wrap">
+          <svg width="130" height="85" viewBox="0 0 130 85" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="15" width="100" height="55" rx="10" fill="#fed7aa" stroke="#f97316" stroke-width="2.5"/>
+            <rect x="48" y="28" width="34" height="28" rx="5" fill="#f97316"/>
+            <path d="M53 28 Q53 18 65 18 Q77 18 77 28" stroke="#f97316" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <circle cx="65" cy="42" r="5" fill="#fff"/>
+            <line x1="65" y1="46" x2="65" y2="52" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="65" y="82" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#c2410c">valor fijo — no cambia</text>
+          </svg>
+        </div>
+        <div class="slide-type">Constante en PSeInt</div>
+        <div class="slide-alias">Un valor que no debe cambiar nunca</div>
+        <div class="slide-rule">PSeInt no tiene una palabra especial para constantes. La convencion es: declararla como variable, asignarla UNA SOLA VEZ y escribir el nombre en MAYUSCULAS para indicar que es constante.</div>
+        <div class="slide-desc">Aunque tecnicamente PSeInt permite cambiar cualquier variable, el programador decide no tocarla mas. Usar MAYUSCULAS es una convencion que avisa a quien lee el codigo: "esto no debe cambiar".</div>
+        <div class="pills">
+          <span class="pill">PI &lt;- 3.1416</span>
+          <span class="pill">MAX_VIDAS &lt;- 3</span>
+          <span class="pill">IVA &lt;- 0.19</span>
+        </div>
+        <div class="code-box">
+<span class="kw-comentario">// Constantes: MAYUSCULAS por convencion</span><br>
+<span class="kw-def">Definir</span> PI <span class="kw-como">Como</span> <span class="kw-tipo">Real</span><br>
+PI &lt;- <span class="kw-num">3.1416</span><br><br>
+<span class="kw-def">Definir</span> MAX_VIDAS <span class="kw-como">Como</span> <span class="kw-tipo">Entero</span><br>
+MAX_VIDAS &lt;- <span class="kw-num">3</span><br><br>
+<span class="kw-def">Definir</span> IVA <span class="kw-como">Como</span> <span class="kw-tipo">Real</span><br>
+IVA &lt;- <span class="kw-num">0.19</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: TIPOS DE DATO -->
+    <div class="slide" id="slide-3">
+      <div class="slide-card sc-decl">
+        <div class="slide-svg-wrap">
+          <svg width="160" height="80" viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2"  y="20" width="36" height="30" rx="7" fill="#f0abfc" stroke="#d946ef" stroke-width="1.5"/>
+            <text x="20" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#86198f">Caracter</text>
+            <rect x="44" y="20" width="34" height="30" rx="7" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="61" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#1d4ed8">Entero</text>
+            <rect x="84" y="20" width="30" height="30" rx="7" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"/>
+            <text x="99" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#c2410c">Real</text>
+            <rect x="120" y="20" width="38" height="30" rx="7" fill="#bbf7d0" stroke="#22c55e" stroke-width="1.5"/>
+            <text x="139" y="39" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#15803d">Logico</text>
+            <text x="20"  y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#86198f" font-weight="800">texto</text>
+            <text x="61"  y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#1d4ed8" font-weight="800">numero entero</text>
+            <text x="99"  y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#c2410c" font-weight="800">decimal</text>
+            <text x="139" y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" fill="#15803d" font-weight="800">verdadero/falso</text>
+          </svg>
+        </div>
+        <div class="slide-type">Tipos de dato en PSeInt</div>
+        <div class="slide-alias">Los cuatro tipos que acepta PSeInt</div>
+        <div class="slide-rule">PSeInt maneja cuatro tipos: Caracter (texto), Entero (numero sin decimales), Real (numero con decimales) y Logico (Verdadero o Falso).</div>
+        <div class="slide-desc">El tipo define que clase de informacion guarda la variable y que operaciones puedes hacer con ella. No puedes sumar un Caracter, ni guardar un texto en un Entero.</div>
+        <div class="pills">
+          <span class="pill">"Hola" → Caracter</span><span class="pill">25 → Entero</span><span class="pill">9.99 → Real</span><span class="pill">Verdadero → Logico</span>
+        </div>
+        <div class="code-box">
+<span class="kw-def">Definir</span> nombre  <span class="kw-como">Como</span> <span class="kw-tipo">Caracter</span>  <span class="kw-comentario">// texto</span><br>
+<span class="kw-def">Definir</span> edad    <span class="kw-como">Como</span> <span class="kw-tipo">Entero</span>    <span class="kw-comentario">// sin decimales</span><br>
+<span class="kw-def">Definir</span> precio  <span class="kw-como">Como</span> <span class="kw-tipo">Real</span>      <span class="kw-comentario">// con decimales</span><br>
+<span class="kw-def">Definir</span> activo  <span class="kw-como">Como</span> <span class="kw-tipo">Logico</span>    <span class="kw-comentario">// V o F</span><br><br>
+nombre &lt;- <span class="kw-str">"Sofia"</span><br>
+edad   &lt;- <span class="kw-num">22</span><br>
+precio &lt;- <span class="kw-num">19.99</span><br>
+activo &lt;- <span class="kw-str">Verdadero</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: CUANDO USAR CADA UNA -->
+    <div class="slide" id="slide-4">
+      <div class="slide-card sc-when">
+        <div class="slide-svg-wrap">
+          <svg width="140" height="85" viewBox="0 0 140 85" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="10" width="60" height="65" rx="10" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="34" y="30" text-anchor="middle" font-family="Fredoka One,cursive" font-size="11" fill="#1d4ed8">Variable</text>
+            <text x="34" y="44" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#1e40af" font-weight="700">el valor cambia</text>
+            <circle cx="20" cy="62" r="4" fill="#3b82f6"/>
+            <circle cx="34" cy="62" r="4" fill="#3b82f6" opacity=".6"/>
+            <circle cx="48" cy="62" r="4" fill="#3b82f6" opacity=".3"/>
+            <rect x="76" y="10" width="60" height="65" rx="10" fill="#fed7aa" stroke="#f97316" stroke-width="2"/>
+            <text x="106" y="30" text-anchor="middle" font-family="Fredoka One,cursive" font-size="11" fill="#c2410c">Constante</text>
+            <text x="106" y="44" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#9a3412" font-weight="700">siempre igual</text>
+            <rect x="88" y="55" width="36" height="12" rx="6" fill="#f97316"/>
+            <text x="106" y="65" text-anchor="middle" font-family="Fredoka One,cursive" font-size="9" fill="#fff">= = =</text>
+          </svg>
+        </div>
+        <div class="slide-type">Cuando usar cada una</div>
+        <div class="slide-alias">La pregunta clave: puede cambiar?</div>
+        <div class="slide-rule">Si el valor puede cambiar durante el algoritmo → Variable (nombre normal). Si el valor nunca debe cambiar → Constante (nombre en MAYUSCULAS).</div>
+        <div class="pills">
+          <span class="pill">puntaje → variable</span><span class="pill">PI → constante</span><span class="pill">vidas → variable</span><span class="pill">IVA → constante</span>
+        </div>
+        <div class="code-box">
+<span class="kw-comentario">// VARIABLES (cambian durante el algoritmo)</span><br>
+<span class="kw-def">Definir</span> vidas   <span class="kw-como">Como</span> <span class="kw-tipo">Entero</span><br>
+<span class="kw-def">Definir</span> usuario <span class="kw-como">Como</span> <span class="kw-tipo">Caracter</span><br>
+vidas &lt;- <span class="kw-num">3</span>         <span class="kw-comentario">// puede bajar a 2, 1, 0</span><br><br>
+<span class="kw-comentario">// CONSTANTES (no deben cambiar)</span><br>
+<span class="kw-def">Definir</span> MAX_NIVEL <span class="kw-como">Como</span> <span class="kw-tipo">Entero</span><br>
+MAX_NIVEL &lt;- <span class="kw-num">10</span>   <span class="kw-comentario">// siempre 10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: ALGORITMO COMPLETO -->
+    <div class="slide" id="slide-5">
+      <div class="slide-card sc-tipos">
+        <div class="slide-svg-wrap">
+          <svg width="130" height="80" viewBox="0 0 130 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="120" height="70" rx="10" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+            <text x="65" y="22" text-anchor="middle" font-family="Fredoka One,cursive" font-size="11" fill="#854d0e">Algoritmo</text>
+            <rect x="15" y="28" width="100" height="8" rx="3" fill="#ca8a04" opacity=".3"/>
+            <rect x="15" y="41" width="80" height="8" rx="3" fill="#ca8a04" opacity=".3"/>
+            <rect x="15" y="54" width="90" height="8" rx="3" fill="#ca8a04" opacity=".3"/>
+            <text x="65" y="75" text-anchor="middle" font-family="Fredoka One,cursive" font-size="11" fill="#854d0e">FinAlgoritmo</text>
+          </svg>
+        </div>
+        <div class="slide-type">Algoritmo completo en PSeInt</div>
+        <div class="slide-alias">Estructura: Algoritmo ... FinAlgoritmo</div>
+        <div class="slide-rule">Todo algoritmo en PSeInt comienza con la palabra Algoritmo seguida del nombre, y termina con FinAlgoritmo. Las declaraciones van al inicio, antes de las instrucciones.</div>
+        <div class="slide-desc">Primero se declaran todas las variables y constantes con Definir. Luego se escriben las instrucciones del algoritmo. Esta guia usa Algoritmo y FinAlgoritmo para mantener la lectura clara desde el diagrama hasta el codigo.</div>
+        <div class="code-box">
+<span class="kw-def">Algoritmo</span> calcularEdad<br>
+<br>
+&nbsp;&nbsp;<span class="kw-comentario">// 1. Declarar variables y constantes</span><br>
+&nbsp;&nbsp;<span class="kw-def">Definir</span> nombre   <span class="kw-como">Como</span> <span class="kw-tipo">Caracter</span><br>
+&nbsp;&nbsp;<span class="kw-def">Definir</span> edad     <span class="kw-como">Como</span> <span class="kw-tipo">Entero</span><br>
+&nbsp;&nbsp;<span class="kw-def">Definir</span> MAYOR    <span class="kw-como">Como</span> <span class="kw-tipo">Entero</span><br>
+<br>
+&nbsp;&nbsp;<span class="kw-comentario">// 2. Asignar valores</span><br>
+&nbsp;&nbsp;MAYOR &lt;- <span class="kw-num">18</span>       <span class="kw-comentario">// constante</span><br>
+&nbsp;&nbsp;nombre &lt;- <span class="kw-str">"Luis"</span>   <span class="kw-comentario">// variable</span><br>
+&nbsp;&nbsp;edad &lt;- <span class="kw-num">20</span>         <span class="kw-comentario">// variable</span><br>
+<span class="kw-def">FinAlgoritmo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-nav">
+      <button class="nav-btn nav-prev" id="btn-prev" onclick="moveSlide(-1)" disabled>Anterior</button>
+      <div class="dots" id="dots">
+        <div class="dot active" onclick="goSlide(0)"></div>
+        <div class="dot" onclick="goSlide(1)"></div>
+        <div class="dot" onclick="goSlide(2)"></div>
+        <div class="dot" onclick="goSlide(3)"></div>
+        <div class="dot" onclick="goSlide(4)"></div>
+        <div class="dot" onclick="goSlide(5)"></div>
+      </div>
+      <button class="nav-btn nav-next" id="btn-next" onclick="moveSlide(1)">Siguiente</button>
+    </div>
+  </div>
+
+  <!-- ====== PANEL JUGAR ====== -->
+  <div class="panel" id="panel-play">
+    <div id="play-content"></div>
+  </div>
+</div>
+
+<script>
+let curSlide=0, totalSlides=6;
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+const SLIDE_NAMES=['Que es una variable','Declarar en PSeInt','Constante en PSeInt','Tipos de dato','Cuando usar cada una','Algoritmo completo'];
+
+function goTab(t){
+  ['learn','play'].forEach(x=>{
+    document.getElementById('tab-'+x).className='tab'+(t===x?' active':'');
+    document.getElementById('panel-'+x).className='panel'+(t===x?' active':'');
+  });
+  if(t==='play') showNameScreen();
+}
+function moveSlide(dir){goSlide(curSlide+dir);}
+function goSlide(n){
+  if(n<0||n>=totalSlides) return;
+  document.getElementById('slide-'+curSlide).classList.remove('active');
+  document.querySelectorAll('.dot')[curSlide].classList.remove('active');
+  curSlide=n;
+  document.getElementById('slide-'+curSlide).classList.add('active');
+  document.querySelectorAll('.dot')[curSlide].classList.add('active');
+  document.getElementById('slide-label').textContent='Tarjeta '+(curSlide+1)+' de '+totalSlides+' — '+SLIDE_NAMES[curSlide];
+  document.getElementById('btn-prev').disabled=(curSlide===0);
+  const nb=document.getElementById('btn-next');
+  if(curSlide===totalSlides-1){nb.textContent='A jugar!';nb.onclick=()=>goTab('play');}
+  else{nb.textContent='Siguiente';nb.onclick=()=>moveSlide(1);}
+}
+
+const M_OK=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const M_IDL=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#ede9fe" stroke="#7c3aed" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#7c3aed"/><circle cx="46" cy="30" r="4" fill="#7c3aed"/><path d="M24 46 Q35 52 46 46" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="25" cy="30" r="1.5" fill="#fff"/><circle cx="47" cy="30" r="1.5" fill="#fff"/></svg>`;
+const M_WIN=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/></svg>`;
+
+const SVG_VAR=`<svg width="36" height="36" viewBox="0 0 36 36"><rect x="2" y="6" width="32" height="24" rx="6" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/><text x="18" y="23" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#1d4ed8">Definir</text></svg>`;
+const SVG_CST=`<svg width="36" height="36" viewBox="0 0 36 36"><rect x="2" y="6" width="32" height="24" rx="6" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"/><rect x="13" y="11" width="10" height="9" rx="2" fill="#f97316"/><path d="M15 11 Q15 6 18 6 Q21 6 21 11" stroke="#f97316" stroke-width="2" fill="none"/><circle cx="18" cy="21" r="2" fill="#fff"/></svg>`;
+
+// Preguntas tipo A: Variable (v) o Constante (c)
+const QA=[
+  {tipo:'A', v:'puntaje del jugador\nque aumenta cada nivel', a:'v', h:'El puntaje cambia'},
+  {tipo:'A', v:'PI <- 3.1416\nnunca se modifica', a:'c', h:'PI es una constante matematica'},
+  {tipo:'A', v:'nombre del usuario\nque escribe al inicio', a:'v', h:'El nombre lo ingresa el usuario'},
+  {tipo:'A', v:'MAX_VIDAS <- 3\nen un videojuego', a:'c', h:'El maximo de vidas no cambia'},
+  {tipo:'A', v:'temperatura actual\nleida del sensor', a:'v', h:'La temperatura varia constantemente'},
+  {tipo:'A', v:'IVA <- 0.19\npara calcular impuestos', a:'c', h:'El IVA es un valor fijo del sistema'},
+  {tipo:'A', v:'contador de intentos\nen un login', a:'v', h:'El contador sube con cada intento'},
+  {tipo:'A', v:'VELOCIDAD_LUZ <- 299792458\nen metros por segundo', a:'c', h:'Es una constante fisica'},
+  {tipo:'A', v:'precio del producto\nque puede ser editado', a:'v', h:'El precio puede cambiar'},
+  {tipo:'A', v:'MAXIMO_CARACTERES <- 100\nen un campo de formulario', a:'c', h:'El limite no cambia'},
+];
+
+// Preguntas tipo B: opcion multiple sobre sintaxis PSeInt
+const QB=[
+  {tipo:'B', v:'¿Como se declara una variable en PSeInt?',
+   opts:['let edad = 25','Definir edad Como Entero','int edad = 25','edad: Entero'], a:1, h:'PSeInt usa Definir ... Como ...'},
+  {tipo:'B', v:'¿Cual es el tipo correcto para guardar el nombre "Sofia" en PSeInt?',
+   opts:['Entero','Real','Logico','Caracter'], a:3, h:'Los textos se guardan como Caracter'},
+  {tipo:'B', v:'¿Como se asigna un valor a una variable en PSeInt?',
+   opts:['edad = 25','edad == 25','edad <- 25','Definir edad 25'], a:2, h:'PSeInt usa la flecha <- para asignar'},
+  {tipo:'B', v:'¿Cual de estas lineas tiene un ERROR de sintaxis en PSeInt?',
+   opts:['Definir edad Como Entero','Definir precio Como Real','Definir nombre Como String','Definir activo Como Logico'], a:2, h:'En PSeInt es Caracter, no String'},
+  {tipo:'B', v:'¿Que tipo se usa para guardar el valor 3.14 en PSeInt?',
+   opts:['Entero','Caracter','Real','Logico'], a:2, h:'Real es para numeros con decimales'},
+  {tipo:'B', v:'¿Que significa escribir el nombre en MAYUSCULAS en PSeInt?',
+   opts:['Que es una funcion','Que es una constante por convencion','Que es global','Que es de tipo Caracter'], a:1, h:'MAYUSCULAS avisa que no debe cambiar'},
+  {tipo:'B', v:'¿Cual es el tipo correcto para guardar Verdadero o Falso?',
+   opts:['Entero','Real','Caracter','Logico'], a:3, h:'Logico acepta Verdadero o Falso'},
+  {tipo:'B', v:'¿Donde van las declaraciones Definir dentro del algoritmo?',
+   opts:['Al final del algoritmo','Despues de las instrucciones','Al inicio, antes de las instrucciones','En cualquier parte'], a:2, h:'Las declaraciones van al principio'},
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
+function showNameScreen(){
+  document.getElementById('play-content').innerHTML=`
+    <div class="name-screen">
+      <div style="display:flex;justify-content:center;margin-bottom:12px">${M_IDL}</div>
+      <div class="name-title">Bienvenido al quiz!</div>
+      <div class="name-sub">Escribe tu nombre completo para comenzar.<br><b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b></div>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="50">
+      <button class="start-btn" onclick="startQuiz()">Comenzar!</button>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
+}
+
+function startQuiz(){
+  const inp=document.getElementById('name-inp');
+  const n=inp?inp.value.trim():'';
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='Escribe tu nombre primero!';return;}
+  playerName=n; score=0; curQ=0; answered=false;
+  const qa=shuffle(QA).slice(0,7);
+  const qb=shuffle(QB).slice(0,5);
+  questions=shuffle([...qa,...qb]);
+  updHdr(); renderQ();
+}
+
+function updHdr(){document.getElementById('hdr-score').textContent=score+' pts';}
+
+function renderQ(){
+  if(curQ>=questions.length){showResult();return;}
+  const q=questions[curQ];
+  const pct=Math.round((curQ/questions.length)*100);
+  answered=false;
+  if(q.tipo==='A') renderQA(q,pct);
+  else renderQB(q,pct);
+}
+
+function renderQA(q,pct){
+  document.getElementById('play-content').innerHTML=`
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${M_IDL}</div>
+    <div class="q-box">
+      <div class="q-label">Variable o Constante?</div>
+      <div class="q-val">${q.v}</div>
+      <div class="q-hint">${q.h}</div>
+    </div>
+    <div class="opts2">
+      <button class="opt o-v" onclick="checkA('v',this)">
+        ${SVG_VAR}
+        <span style="font-size:13px">Variable</span>
+        <small style="font-weight:400;font-size:11px;opacity:.8">nombre normal · cambia</small>
+      </button>
+      <button class="opt o-c" onclick="checkA('c',this)">
+        ${SVG_CST}
+        <span style="font-size:13px">Constante</span>
+        <small style="font-weight:400;font-size:11px;opacity:.8">MAYUSCULAS · valor fijo</small>
+      </button>
+    </div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>`;
+}
+
+function renderQB(q,pct){
+  const optsHtml=q.opts.map((o,i)=>`<button class="opt4" onclick="checkB(${i},this)">${o}</button>`).join('');
+  document.getElementById('play-content').innerHTML=`
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${M_IDL}</div>
+    <div class="q-box">
+      <div class="q-label">Selecciona la respuesta correcta</div>
+      <div class="q-val" style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;text-align:center">${q.v}</div>
+    </div>
+    <div class="opts4">${optsHtml}</div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>`;
+}
+
+function checkA(ans,btn){
+  if(answered) return;
+  answered=true;
+  const q=questions[curQ];
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach(b=>b.disabled=true);
+  const correct=(ans===q.a);
+  if(correct){
+    btn.classList.add('correct');
+    score+=100; updHdr();
+    setFb(true,'Correcto!','+100 puntos');
+    document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    btn.classList.add('wrong');
+    btns[q.a==='v'?0:1].classList.add('correct');
+    score=Math.max(0,score-10); updHdr();
+    setFb(false,'Era: '+(q.a==='v'?'Variable':'Constante'),'-10 puntos');
+    document.getElementById('mc').innerHTML=M_ERR;
+  }
+  setTimeout(()=>{curQ++;renderQ();},1900);
+}
+
+function checkB(idx,btn){
+  if(answered) return;
+  answered=true;
+  const q=questions[curQ];
+  const btns=document.querySelectorAll('.opt4');
+  btns.forEach(b=>b.disabled=true);
+  if(idx===q.a){
+    btn.classList.add('correct');
+    score+=100; updHdr();
+    setFb(true,'Correcto!','+100 puntos');
+    document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    btn.classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    score=Math.max(0,score-10); updHdr();
+    setFb(false,'Era: '+q.opts[q.a],'-10 puntos');
+    document.getElementById('mc').innerHTML=M_ERR;
+  }
+  setTimeout(()=>{curQ++;renderQ();},1900);
+}
+
+function setFb(ok,msg,pts){
+  document.getElementById('fb').textContent=msg;
+  document.getElementById('fb').className='feedback '+(ok?'fb-ok':'fb-err');
+  document.getElementById('delta').textContent=pts;
+  document.getElementById('delta').className='delta '+(ok?'up':'down');
+}
+
+function showResult(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max=questions.length*100;
+  const pct=Math.round((score/max)*100);
+  const stars=pct>=90?'★★★':pct>=60?'★★':'★';
+  const msg=pct>=90?'Dominas PSeInt!':pct>=60?'Muy bien! Un poco mas de practica':'Repasa las tarjetas y vuelve a intentarlo';
+  document.getElementById('play-content').innerHTML=`
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
+      <div class="res-title">Juego terminado!</div>
+      <div class="res-stars" style="color:#eab308">${stars}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:10px;">${msg}</div>
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Correctas</span><span class="res-val">${Math.round(score/100)} de ${questions.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
+      <button class="rbtn sec" onclick="goTab('learn')">Repasar</button>
+    </div>`;
+  document.getElementById('hdr-score').textContent=score+' pts';
+}
+
+function rePlay(){
+  score=0; curQ=0; answered=false;
+  const qa=shuffle(QA).slice(0,7);
+  const qb=shuffle(QB).slice(0,5);
+  questions=shuffle([...qa,...qb]);
+  updHdr(); renderQ();
+}
+</script>
+</html>
