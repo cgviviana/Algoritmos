@@ -1,0 +1,590 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operadores en PSeInt</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+#app{border-radius:20px;overflow:hidden;background:#f8f4ff;font-family:'Nunito',sans-serif;max-width:600px;margin:0 auto;}
+.hdr{background:#0f766e;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;}
+.hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;}
+.tabs{display:flex;background:#ccfbf1;}
+.tab{flex:1;padding:10px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;border:none;background:transparent;color:#0f766e;border-bottom:3px solid transparent;transition:all .2s;font-family:'Nunito',sans-serif;}
+.tab.active{background:#fff;border-bottom:3px solid #0f766e;}
+.panel{display:none;padding:18px;}
+.panel.active{display:block;}
+.slide{display:none;animation:fadeIn .35s ease;}
+.slide.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+
+/* COLORES POR GRUPO */
+.sc-intro {background:#fefce8;border-color:#eab308;}
+.sc-arit  {background:#eff6ff;border-color:#3b82f6;}
+.sc-rel   {background:#fdf4ff;border-color:#d946ef;}
+.sc-log   {background:#f0fdf4;border-color:#22c55e;}
+.sc-asig  {background:#fff7ed;border-color:#f97316;}
+.sc-concat{background:#fef9c3;border-color:#ca8a04;}
+.sc-prior {background:#fce7f3;border-color:#ec4899;}
+
+.slide-card{border-radius:18px;padding:20px 18px;border:3px solid;margin-bottom:14px;}
+.slide-svg-wrap{display:flex;justify-content:center;margin-bottom:12px;}
+.slide-type{font-family:'Fredoka One',cursive;font-size:21px;text-align:center;margin-bottom:3px;}
+.sc-intro  .slide-type{color:#92400e;}
+.sc-arit   .slide-type{color:#1d4ed8;}
+.sc-rel    .slide-type{color:#a21caf;}
+.sc-log    .slide-type{color:#15803d;}
+.sc-asig   .slide-type{color:#c2410c;}
+.sc-concat .slide-type{color:#854d0e;}
+.sc-prior  .slide-type{color:#9d174d;}
+
+.slide-alias{text-align:center;font-size:12px;font-weight:700;color:#888;margin-bottom:10px;}
+.slide-rule{border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;margin-bottom:12px;line-height:1.5;}
+.sc-intro  .slide-rule{background:#fef08a;color:#78350f;}
+.sc-arit   .slide-rule{background:#bfdbfe;color:#1e40af;}
+.sc-rel    .slide-rule{background:#f0abfc;color:#86198f;}
+.sc-log    .slide-rule{background:#bbf7d0;color:#166534;}
+.sc-asig   .slide-rule{background:#fed7aa;color:#9a3412;}
+.sc-concat .slide-rule{background:#fef08a;color:#78350f;}
+.sc-prior  .slide-rule{background:#fce7f3;color:#9d174d;}
+
+.slide-desc{font-size:13px;color:#444;line-height:1.55;margin-bottom:12px;}
+.op-table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:13px;}
+.op-table th{text-align:left;padding:6px 8px;font-weight:800;color:#fff;border-radius:0;}
+.op-table td{padding:7px 8px;border-bottom:1px solid rgba(0,0,0,0.06);vertical-align:middle;}
+.op-table tr:last-child td{border:none;}
+.op-sym{font-family:monospace;font-size:15px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block;}
+.code-box{font-family:monospace;font-size:12px;background:rgba(0,0,0,0.06);border-radius:8px;padding:8px 10px;line-height:1.9;}
+.next-hint{text-align:center;font-size:12px;color:#0f766e;font-weight:700;margin-top:8px;}
+.progress-label{font-size:12px;color:#0f766e;font-weight:700;text-align:center;margin-bottom:10px;background:#ccfbf1;border-radius:999px;padding:5px 14px;}
+.carousel-nav{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.nav-btn{font-family:'Fredoka One',cursive;font-size:15px;padding:9px 20px;border-radius:12px;border:none;cursor:pointer;transition:transform .15s;}
+.nav-prev{background:#ccfbf1;color:#0f766e;box-shadow:0 3px 0 #99f6e4;}
+.nav-next{background:#0f766e;color:#fff;box-shadow:0 3px 0 #0d9488;}
+.nav-btn:hover{transform:translateY(-2px);}
+.nav-btn:active{transform:translateY(1px);}
+.nav-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.dots{display:flex;gap:7px;}
+.dot{width:10px;height:10px;border-radius:50%;background:#99f6e4;transition:all .2s;cursor:pointer;}
+.dot.active{background:#0f766e;transform:scale(1.3);}
+
+/* QUIZ */
+.name-screen{background:#fff;border-radius:14px;border:1.5px solid #ccfbf1;padding:20px;text-align:center;}
+.name-title{font-family:'Fredoka One',cursive;font-size:20px;color:#0f766e;margin-bottom:6px;}
+.name-sub{font-size:13px;color:#888;margin-bottom:14px;}
+.name-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid #99f6e4;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#1e1b4b;margin-bottom:12px;}
+.name-input:focus{border-color:#0f766e;}
+.start-btn{width:100%;background:#0f766e;color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #0d9488;transition:transform .1s;}
+.start-btn:hover{transform:translateY(-2px);}
+.quiz-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-counter{font-size:13px;font-weight:700;color:#888;}
+.q-score-lbl{font-family:'Fredoka One',cursive;font-size:16px;color:#0f766e;}
+.prog-bar{background:#ccfbf1;border-radius:999px;height:8px;margin-bottom:14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:#0f766e;transition:width .4s;}
+.mascot-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+.q-box{background:#fff;border-radius:14px;border:2px solid #ccfbf1;padding:16px;text-align:center;margin-bottom:14px;}
+.q-label{font-size:11px;font-weight:700;color:#0d9488;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.q-val{font-family:monospace;font-size:20px;color:#1e1b4b;margin-bottom:3px;line-height:1.5;}
+.q-ctx{font-size:12px;color:#888;margin-top:4px;font-family:'Nunito',sans-serif;}
+.opts4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.opt4{padding:10px 8px;border-radius:12px;border:2.5px solid #99f6e4;font-family:'Fredoka One',cursive;font-size:13px;cursor:pointer;transition:transform .15s;background:#fff;color:#1e1b4b;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 3px 0 rgba(0,0,0,.06);}
+.opt4:hover:not(:disabled){transform:translateY(-2px);border-color:#0f766e;background:#f0fdfa;}
+.opt4:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.opt4.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;transform:scale(1.04);}
+.opt4.wrong{background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+.opts1{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px;}
+.opt1{padding:10px 14px;border-radius:12px;border:2.5px solid #99f6e4;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:transform .15s;background:#fff;color:#1e1b4b;text-align:left;}
+.opt1:hover:not(:disabled){transform:translateY(-2px);border-color:#0f766e;background:#f0fdfa;}
+.opt1:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.opt1.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;}
+.opt1.wrong{background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:24px;margin-bottom:4px;}
+.fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
+.delta{font-size:22px;font-weight:800;text-align:center;min-height:28px;margin-bottom:4px;}
+.delta.up{color:#16a34a;}.delta.down{color:#dc2626;}
+.result{text-align:center;padding:14px 8px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#0f766e;margin-bottom:4px;}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{background:#fff;border-radius:14px;border:1.5px solid #ccfbf1;padding:16px;margin:12px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid #ccfbf1;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#0f766e;}
+.res-lbl{color:#888;font-weight:600;}
+.res-val{font-weight:700;color:#1e1b4b;}
+.rbtn{background:#0f766e;color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #0d9488;margin:4px;transition:transform .1s;}
+.rbtn:hover{transform:translateY(-2px);}
+.rbtn.sec{background:#ccfbf1;color:#0f766e;box-shadow:0 4px 0 #99f6e4;}
+.uso-badge{display:inline-block;background:#ccfbf1;color:#0f766e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:10px;}
+
+/* colores de simbolos en tabla */
+.sym-arit{background:#bfdbfe;color:#1e40af;}
+.sym-rel {background:#f0abfc;color:#86198f;}
+.sym-log {background:#bbf7d0;color:#166534;}
+.sym-asig{background:#fed7aa;color:#9a3412;}
+.sym-cat {background:#fef08a;color:#78350f;}
+.kw{color:#0f766e;font-weight:700;}
+.kw-num{color:#1d4ed8;}
+.kw-str{color:#15803d;}
+.kw-com{color:#999;font-style:italic;}
+</style>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-title">Operadores · PSeInt</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-learn" onclick="goTab('learn')">Aprender</button>
+    <button class="tab" id="tab-play"  onclick="goTab('play')">Jugar</button>
+  </div>
+
+  <!-- ====== APRENDER ====== -->
+  <div class="panel active" id="panel-learn">
+    <div class="progress-label" id="slide-label"> 1 de 7 — Qué es un operador</div>
+
+    <!-- SLIDE 0: INTRO -->
+    <div class="slide active" id="slide-0">
+      <div class="slide-card sc-intro">
+        <div class="uso-badge">Uso en clase · PSeInt</div>
+        <div class="slide-svg-wrap">
+          <svg width="130" height="88" viewBox="0 0 130 88" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5"  y="28" width="34" height="32" rx="8" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="22" y="49" text-anchor="middle" font-family="Fredoka One,cursive" font-size="16" fill="#1d4ed8">10</text>
+            <rect x="48" y="28" width="34" height="32" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="2"/>
+            <text x="65" y="49" text-anchor="middle" font-family="Fredoka One,cursive" font-size="20" fill="#92400e">+</text>
+            <rect x="91" y="28" width="34" height="32" rx="8" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="108" y="49" text-anchor="middle" font-family="Fredoka One,cursive" font-size="16" fill="#1d4ed8">5</text>
+            <line x1="5" y1="78" x2="125" y2="78" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="65" y="88" text-anchor="middle" font-family="Fredoka One,cursive" font-size="13" fill="#92400e">resultado: 15</text>
+          </svg>
+        </div>
+        <div class="slide-type">Qué es un Operador</div>
+        <div class="slide-alias">El simbolo que indica una operación</div>
+        <div class="slide-rule">Un operador es un símbolo que le dice al algoritmo que operación realizar entre uno o dos valores. El resultado puede ser un número, un texto o un valor lógico (Verdadero/Falso).</div>
+        
+      </div>
+    </div>
+
+    <!-- SLIDE 1: ARITMETICOS -->
+    <div class="slide" id="slide-1">
+      <div class="slide-card sc-arit">
+        <div class="slide-svg-wrap">
+          
+        </div>
+        <div class="slide-type">Operadores Aritméticos</div>
+        <div class="slide-alias">Para calcular con números</div>
+        <div class="slide-rule">Producen un resultado numérico. Se usan con variables de tipo Entero o Real. El operador especial es MOD: devuelve el RESTO de una division entera.</div>
+        <table class="op-table">
+          <tr style="background:#3b82f6"><th>Simbolo</th><th>Nombre</th><th>Ejemplo</th><th>Resultado</th></tr>
+          <tr><td><span class="op-sym sym-arit">+</span></td><td>Suma</td><td><code>8 + 3</code></td><td>11</td></tr>
+          <tr><td><span class="op-sym sym-arit">-</span></td><td>Resta</td><td><code>8 - 3</code></td><td>5</td></tr>
+          <tr><td><span class="op-sym sym-arit">*</span></td><td>Multiplicacion</td><td><code>4 * 3</code></td><td>12</td></tr>
+          <tr><td><span class="op-sym sym-arit">/</span></td><td>Division</td><td><code>10 / 4</code></td><td>2.5</td></tr>
+          <tr><td><span class="op-sym sym-arit">MOD</span></td><td>Resto / Modulo</td><td><code>10 MOD 3</code></td><td>1</td></tr>
+          <tr><td><span class="op-sym sym-arit">^</span></td><td>Potencia</td><td><code>2 ^ 8</code></td><td>256</td></tr>
+        </table>
+        
+      </div>
+    </div>
+
+    <!-- SLIDE 2: RELACIONALES -->
+    <div class="slide" id="slide-2">
+      <div class="slide-card sc-rel">
+       
+        <div class="slide-type">Operadores Relacionales</div>
+        <div class="slide-alias">Para comparar dos valores</div>
+        <div class="slide-rule">Comparan dos valores y devuelven SIEMPRE un resultado Lógico (Verdadero o Falso). Se usan en  estructuras algorítimicas avanzadas de Si, Mientras y Repetir para tomar decisiones.</div>
+        <table class="op-table">
+          <tr style="background:#d946ef"><th>Simbolo</th><th>Significado</th><th>Ejemplo</th><th>Resultado</th></tr>
+          <tr><td><span class="op-sym sym-rel">&gt;</span></td><td>Mayor que</td><td><code>8 &gt; 3</code></td><td>Verdadero</td></tr>
+          <tr><td><span class="op-sym sym-rel">&lt;</span></td><td>Menor que</td><td><code>2 &lt; 1</code></td><td>Falso</td></tr>
+          <tr><td><span class="op-sym sym-rel">&gt;=</span></td><td>Mayor o igual</td><td><code>5 &gt;= 5</code></td><td>Verdadero</td></tr>
+          <tr><td><span class="op-sym sym-rel">&lt;=</span></td><td>Menor o igual</td><td><code>3 &lt;= 2</code></td><td>Falso</td></tr>
+          <tr><td><span class="op-sym sym-rel">=</span></td><td>Igual a</td><td><code>4 = 4</code></td><td>Verdadero</td></tr>
+          <tr><td><span class="op-sym sym-rel">&lt;&gt;</span></td><td>Distinto de</td><td><code>5 &lt;&gt; 3</code></td><td>Verdadero</td></tr>
+        </table>
+        
+      </div>
+    </div>
+
+    <!-- SLIDE 3: LÓGICOS -->
+    <div class="slide" id="slide-3">
+      <div class="slide-card sc-log">
+        
+        <div class="slide-type">Operadores Lógicos</div>
+        <div class="slide-alias">Para combinar condiciones</div>
+        <div class="slide-rule">Se usan cuando necesitas verificar dos o más condiciones al mismo tiempo (Y), al menos una (O) o negar una condicion (NO).</div>
+        <table class="op-table">
+          <tr style="background:#22c55e"><th>Simbolo</th><th>Nombre</th><th>Cuándo da Verdadero</th></tr>
+          <tr><td><span class="op-sym sym-log">Y</span></td><td>Y lógico (AND)</td><td>Cuando AMBAS condiciones son Verdaderas</td></tr>
+          <tr><td><span class="op-sym sym-log">O</span></td><td>O lógico (OR)</td><td>Cuando AL MENOS UNA es Verdadera</td></tr>
+          <tr><td><span class="op-sym sym-log">NO</span></td><td>Negacion (NOT)</td><td>Invierte: si era Verdadero → Falso y viceversa</td></tr>
+        </table>
+       
+      </div>
+    </div>
+
+    <!-- SLIDE 4: ASIGNACION -->
+    <div class="slide" id="slide-4">
+      <div class="slide-card sc-asig">
+        <div class="slide-svg-wrap">
+          <svg width="150" height="72" viewBox="0 0 150 72" xmlns="http://www.w3.org/2000/svg">
+            <!-- flecha asignacion -->
+            <rect x="20" y="20" width="44" height="32" rx="8" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="42" y="41" text-anchor="middle" font-family="Fredoka One,cursive" font-size="14" fill="#1d4ed8">total</text>
+            <rect x="74" y="20" width="28" height="32" rx="8" fill="#fed7aa" stroke="#f97316" stroke-width="2.5"/>
+            <text x="88" y="41" text-anchor="middle" font-family="monospace" font-size="18" font-weight="bold" fill="#c2410c">&lt;-</text>
+            <rect x="112" y="20" width="30" height="32" rx="8" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="127" y="41" text-anchor="middle" font-family="Fredoka One,cursive" font-size="14" fill="#1d4ed8">500</text>
+            <text x="75" y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#c2410c" font-weight="800">operador de asignacion</text>
+            <text x="42" y="66" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#1d4ed8" font-weight="800">variable</text>
+            <text x="127" y="66" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#1d4ed8" font-weight="800">valor / expresion</text>
+          </svg>
+        </div>
+        <div class="slide-type">Operador de Asignacion</div>
+        <div class="slide-alias">La flecha &lt;- que guarda un valor</div>
+        <div class="slide-rule">El operador &lt;- (flecha) asigna el resultado del lado derecho a la variable del lado izquierdo. Es diferente de = (comparacion). El lado derecho se calcula primero.</div>
+        <div class="slide-desc">Un error comun: confundir &lt;- (asignar) con = (comparar). En PSeInt, la flecha &lt;- siempre asigna. El signo = solo compara dentro de condiciones Si / Mientras.</div>
+        <div class="code-box">
+<span class="kw-com">// Asignar un valor directo</span><br>
+puntaje &lt;- <span class="kw-num">0</span><br>
+<span class="kw-com">// Asignar el resultado de una expresion</span><br>
+total &lt;- precio * cantidad<br>
+<span class="kw-com">// Acumular (leer el valor actual y sumarle algo)</span><br>
+puntaje &lt;- puntaje + <span class="kw-num">100</span><br>
+<span class="kw-com">// Asignar resultado de comparacion</span><br>
+esMayor &lt;- edad &gt;= <span class="kw-num">18</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: CONCATENACION -->
+    <div class="slide" id="slide-5">
+      <div class="slide-card sc-concat">
+        <div class="slide-svg-wrap">
+          <svg width="160" height="72" viewBox="0 0 160 72" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4"  y="20" width="46" height="28" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="2"/>
+            <text x="27" y="38" text-anchor="middle" font-family="monospace" font-size="11" fill="#78350f">"Hola"</text>
+            <rect x="58" y="20" width="22" height="28" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/>
+            <text x="69" y="38" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#92400e">+</text>
+            <rect x="88" y="20" width="68" height="28" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="2"/>
+            <text x="122" y="38" text-anchor="middle" font-family="monospace" font-size="11" fill="#78350f">" Mundo"</text>
+            <text x="80" y="14" text-anchor="middle" font-family="Nunito,sans-serif" font-size="9" fill="#92400e" font-weight="800">concatenacion con +</text>
+            <line x1="4" y1="60" x2="156" y2="60" stroke="#eab308" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="80" y="72" text-anchor="middle" font-family="monospace" font-size="11" fill="#78350f">resultado: "Hola Mundo"</text>
+          </svg>
+        </div>
+        <div class="slide-type">Concatenacion de Texto</div>
+        <div class="slide-alias">Unir cadenas de Caracter con +</div>
+        <div class="slide-rule">En PSeInt se usa el simbolo + para unir (concatenar) dos o mas textos de tipo Caracter. El resultado es un nuevo texto que los contiene a todos juntos.</div>
+        <div class="slide-desc">La concatenacion solo funciona entre Caracter. Si mezclas un número con texto, PSeInt puede dar error o convertir automaticamente. Es buena practica convertir el número a texto antes.</div>
+        <div class="code-box">
+<span class="kw-com">// Unir dos textos</span><br>
+saludo &lt;- <span class="kw-str">"Hola "</span> + nombre<br>
+<span class="kw-com">// Resultado: "Hola Sofia" (si nombre = "Sofia")</span><br><br>
+<span class="kw-com">// Incluir un número en un mensaje</span><br>
+msg &lt;- <span class="kw-str">"Tu puntaje es: "</span> + puntaje<br>
+Escribir <span class="kw-str">"Bienvenido, "</span> + usuario + <span class="kw-str">"!"</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: PRECEDENCIA -->
+    <div class="slide" id="slide-6">
+      <div class="slide-card sc-prior">
+        <div class="slide-svg-wrap">
+          <svg width="160" height="72" viewBox="0 0 160 72" xmlns="http://www.w3.org/2000/svg">
+            <!-- piramide de precedencia -->
+            <polygon points="80,8 140,62 20,62" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+            <text x="80" y="26" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#9d174d">1. ( )</text>
+            <text x="80" y="38" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#9d174d">2. ^ · NO</text>
+            <text x="80" y="49" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#9d174d">3. * · / · MOD</text>
+            <text x="80" y="60" text-anchor="middle" font-family="Fredoka One,cursive" font-size="10" fill="#9d174d">4. + · - &nbsp;5. &gt; &lt; = &nbsp;6. Y · O</text>
+          </svg>
+        </div>
+        <div class="slide-type">Precedencia de Operadores</div>
+        <div class="slide-alias">Quien se calcula primero</div>
+        <div class="slide-rule">Cuando hay varios operadores en una expresion, PSeInt los calcula en un orden fijo. Los parentesis siempre van primero. Si tienes dudas, usa parentesis para forzar el orden que necesitas.</div>
+        <table class="op-table">
+          <tr style="background:#ec4899"><th>#</th><th>Operadores</th><th>Descripcion</th></tr>
+          <tr><td><b>1</b></td><td><span class="op-sym sym-cat">( )</span></td><td>Parentesis — siempre primero</td></tr>
+          <tr><td><b>2</b></td><td><span class="op-sym sym-cat">^  NO</span></td><td>Potencia y negacion logica</td></tr>
+          <tr><td><b>3</b></td><td><span class="op-sym sym-cat">*  /  MOD</span></td><td>Multiplicacion, division, modulo</td></tr>
+          <tr><td><b>4</b></td><td><span class="op-sym sym-cat">+  -</span></td><td>Suma y resta</td></tr>
+          <tr><td><b>5</b></td><td><span class="op-sym sym-cat">&gt; &lt; &gt;= &lt;= = &lt;&gt;</span></td><td>Relacionales</td></tr>
+          <tr><td><b>6</b></td><td><span class="op-sym sym-cat">Y  O</span></td><td>Lógicos — ultimo</td></tr>
+        </table>
+        <div class="code-box">
+<span class="kw-com">// Sin parentesis: * va antes que +</span><br>
+resultado &lt;- <span class="kw-num">2</span> + <span class="kw-num">3</span> * <span class="kw-num">4</span>   <span class="kw-com">// = 14  (no 20)</span><br>
+<span class="kw-com">// Con parentesis: controlas el orden</span><br>
+resultado &lt;- (<span class="kw-num">2</span> + <span class="kw-num">3</span>) * <span class="kw-num">4</span>  <span class="kw-com">// = 20</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-nav">
+      <button class="nav-btn nav-prev" id="btn-prev" onclick="moveSlide(-1)" disabled>Anterior</button>
+      <div class="dots" id="dots">
+        <div class="dot active" onclick="goSlide(0)"></div>
+        <div class="dot" onclick="goSlide(1)"></div>
+        <div class="dot" onclick="goSlide(2)"></div>
+        <div class="dot" onclick="goSlide(3)"></div>
+        <div class="dot" onclick="goSlide(4)"></div>
+        <div class="dot" onclick="goSlide(5)"></div>
+        <div class="dot" onclick="goSlide(6)"></div>
+      </div>
+      <button class="nav-btn nav-next" id="btn-next" onclick="moveSlide(1)">Siguiente</button>
+    </div>
+  </div>
+
+  <!-- ====== JUGAR ====== -->
+  <div class="panel" id="panel-play">
+    <div id="play-content"></div>
+  </div>
+</div>
+
+<script>
+let curSlide=0, totalSlides=7;
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+const SLIDE_NAMES=['Que es un operador','Aritméticos','Relacionales','Lógicos','Asignacion','Concatenacion','Precedencia'];
+
+function goTab(t){
+  ['learn','play'].forEach(x=>{
+    document.getElementById('tab-'+x).className='tab'+(t===x?' active':'');
+    document.getElementById('panel-'+x).className='panel'+(t===x?' active':'');
+  });
+  if(t==='play') showNameScreen();
+}
+function moveSlide(dir){goSlide(curSlide+dir);}
+function goSlide(n){
+  if(n<0||n>=totalSlides) return;
+  document.getElementById('slide-'+curSlide).classList.remove('active');
+  document.querySelectorAll('.dot')[curSlide].classList.remove('active');
+  curSlide=n;
+  document.getElementById('slide-'+curSlide).classList.add('active');
+  document.querySelectorAll('.dot')[curSlide].classList.add('active');
+  document.getElementById('slide-label').textContent='Tarjeta '+(curSlide+1)+' de '+totalSlides+' — '+SLIDE_NAMES[curSlide];
+  document.getElementById('btn-prev').disabled=(curSlide===0);
+  const nb=document.getElementById('btn-next');
+  if(curSlide===totalSlides-1){nb.textContent='A jugar!';nb.onclick=()=>goTab('play');}
+  else{nb.textContent='Siguiente';nb.onclick=()=>moveSlide(1);}
+}
+
+const M_OK=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const M_IDL=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#ccfbf1" stroke="#0f766e" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#0f766e"/><circle cx="46" cy="30" r="4" fill="#0f766e"/><path d="M24 46 Q35 52 46 46" stroke="#0f766e" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="25" cy="30" r="1.5" fill="#fff"/><circle cx="47" cy="30" r="1.5" fill="#fff"/></svg>`;
+const M_WIN=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/></svg>`;
+
+// ——— BANCO DE PREGUNTAS ———
+
+// Tipo S: ¿Qué simbolo es? (4 opciones en grilla 2x2)
+const QS=[
+  {tipo:'S', pregunta:'¿Cual es el operador para calcular el RESTO de una division en PSeInt?',
+   opts:['/','^','MOD','*'], a:2, exp:'MOD devuelve el resto. Ejemplo: 10 MOD 3 = 1'},
+  {tipo:'S', pregunta:'¿Que simbolo se usa para comparar si dos valores son DISTINTOS en PSeInt?',
+   opts:['!=','<>','=/=','≠'], a:1, exp:'En PSeInt el "distinto de" se escribe <>'},
+  {tipo:'S', pregunta:'¿Que simbolo se usa para ASIGNAR un valor a una variable en PSeInt?',
+   opts:['=',':=','<-','->'], a:2, exp:'La flecha <- es el operador de asignacion en PSeInt'},
+  {tipo:'S', pregunta:'¿Como se escribe "mayor o igual que" en PSeInt?',
+   opts:['=>','>=','>==','≥'], a:1, exp:'Se escribe >= (mayor o igual)'},
+  {tipo:'S', pregunta:'¿Que operador lógico exige que AMBAS condiciones sean verdaderas?',
+   opts:['O','NO','Y','SI'], a:2, exp:'Y (AND) requiere que las dos condiciones sean Verdaderas'},
+  {tipo:'S', pregunta:'¿Como se concatenan (unen) dos textos Caracter en PSeInt?',
+   opts:['&','++','+','||'], a:2, exp:'En PSeInt se usa + para unir textos de tipo Caracter'},
+  {tipo:'S', pregunta:'¿Que operador invierte un valor Lógico (de Verdadero a Falso)?',
+   opts:['Y','O','NO','<>'], a:2, exp:'NO (NOT) invierte el valor lógico'},
+  {tipo:'S', pregunta:'¿Cual es el operador de potencia en PSeInt?',
+   opts:['**','^^','^','pot'], a:2, exp:'El acento circunflejo ^ es la potencia en PSeInt'},
+  {tipo:'S', pregunta:'¿Que simbolo compara si dos valores son IGUALES en PSeInt?',
+   opts:['==','===','=',':='], a:2, exp:'En PSeInt = sirve tanto para comparar como para... bueno, en condiciones compara'},
+  {tipo:'S', pregunta:'¿Cual operador se usa cuando basta con que UNA condicion sea verdadera?',
+   opts:['Y','NO','&&','O'], a:3, exp:'O (OR) es verdadero si al menos una condicion lo es'},
+];
+
+// Tipo R: ¿Cual es el resultado de esta expresion?
+const QR=[
+  {tipo:'R', pregunta:'¿Cual es el resultado de esta expresion?', expr:'10 MOD 3',
+   opts:['0','1','3','10'], a:1, exp:'10 dividido 3 = 3 con resto 1. MOD devuelve el resto.'},
+  {tipo:'R', pregunta:'¿Cual es el resultado de esta expresion?', expr:'2 ^ 4',
+   opts:['8','16','6','24'], a:1, exp:'2 elevado a la 4 = 2*2*2*2 = 16'},
+  {tipo:'R', pregunta:'¿Cual es el resultado de esta expresion?', expr:'7 MOD 2',
+   opts:['3','0','1','3.5'], a:2, exp:'7 dividido 2 = 3 con resto 1'},
+  {tipo:'R', pregunta:'¿Verdadero o Falso?', expr:'5 > 3 Y 2 < 10',
+   opts:['Verdadero','Falso','Error','Ninguno'], a:0, exp:'5>3 es V, 2<10 es V. V Y V = Verdadero'},
+  {tipo:'R', pregunta:'¿Verdadero o Falso?', expr:'4 = 4 Y 3 > 5',
+   opts:['Verdadero','Falso','Error','Ninguno'], a:1, exp:'4=4 es V, 3>5 es F. V Y F = Falso'},
+  {tipo:'R', pregunta:'¿Verdadero o Falso?', expr:'NO Verdadero',
+   opts:['Verdadero','Falso','Error','0'], a:1, exp:'NO invierte: NO Verdadero = Falso'},
+  {tipo:'R', pregunta:'¿Verdadero o Falso?', expr:'5 <> 3 O 2 > 10',
+   opts:['Verdadero','Falso','Error','Ninguno'], a:0, exp:'5<>3 es V. Con O basta una verdadera: Verdadero'},
+  {tipo:'R', pregunta:'¿Cual es el resultado de esta expresion?', expr:'2 + 3 * 4',
+   opts:['20','14','24','10'], a:1, exp:'Primero * : 3*4=12, luego +: 2+12=14. El * tiene mayor precedencia'},
+  {tipo:'R', pregunta:'¿Cual es el resultado de esta expresion?', expr:'(2 + 3) * 4',
+   opts:['14','20','24','10'], a:1, exp:'Parentesis primero: 2+3=5, luego 5*4=20'},
+  {tipo:'R', pregunta:'¿Verdadero o Falso?', expr:'NO (3 > 5)',
+   opts:['Verdadero','Falso','Error','Ninguno'], a:0, exp:'3>5 es Falso, NO Falso = Verdadero'},
+];
+
+// Tipo G: ¿A que grupo pertenece?
+const QG=[
+  {tipo:'G', pregunta:'¿A que grupo de operadores pertenece MOD?',
+   opts:['Relacional','Lógico','Aritmetico','Asignacion'], a:2, exp:'MOD es aritmetico: devuelve el resto de una division'},
+  {tipo:'G', pregunta:'¿A que grupo pertenece el operador <> ?',
+   opts:['Aritmetico','Relacional','Lógico','Concatenacion'], a:1, exp:'<> es relacional: compara si dos valores son distintos'},
+  {tipo:'G', pregunta:'¿A que grupo pertenece el operador Y ?',
+   opts:['Aritmetico','Relacional','Lógico','Asignacion'], a:2, exp:'Y es lógico: combina dos condiciones'},
+  {tipo:'G', pregunta:'¿A que grupo pertenece el operador <- ?',
+   opts:['Relacional','Lógico','Aritmetico','Asignacion'], a:3, exp:'La flecha <- es el operador de asignacion'},
+  {tipo:'G', pregunta:'¿A que grupo pertenece el operador >= ?',
+   opts:['Aritmetico','Relacional','Lógico','Asignacion'], a:1, exp:'>= es relacional: compara mayor o igual'},
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
+function showNameScreen(){
+  document.getElementById('play-content').innerHTML=`
+    <div class="name-screen">
+      <div style="display:flex;justify-content:center;margin-bottom:12px">${M_IDL}</div>
+      <div class="name-title">Bienvenido al quiz!</div>
+      <div class="name-sub">Escribe tu nombre completo para comenzar.<br><b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b></div>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="50">
+      <button class="start-btn" onclick="startQuiz()">Comenzar!</button>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
+}
+
+function startQuiz(){
+  const inp=document.getElementById('name-inp');
+  const n=inp?inp.value.trim():'';
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='Escribe tu nombre primero!';return;}
+  playerName=n; score=0; curQ=0; answered=false;
+  questions=shuffle([
+    ...shuffle(QS).slice(0,5),
+    ...shuffle(QR).slice(0,5),
+    ...shuffle(QG).slice(0,3),
+  ]);
+  updHdr(); renderQ();
+}
+
+function updHdr(){document.getElementById('hdr-score').textContent=score+' pts';}
+
+function renderQ(){
+  if(curQ>=questions.length){showResult();return;}
+  const q=questions[curQ];
+  const pct=Math.round((curQ/questions.length)*100);
+  answered=false;
+  const hdr=`
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${M_IDL}</div>`;
+
+  let qbox='';
+  if(q.tipo==='S'){
+    qbox=`<div class="q-box">
+      <div class="q-label">Cual es el operador?</div>
+      <div class="q-val" style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;text-align:center">${q.pregunta}</div>
+    </div>`;
+  } else if(q.tipo==='R'){
+    qbox=`<div class="q-box">
+      <div class="q-label">${q.pregunta}</div>
+      <div class="q-val">${q.expr}</div>
+    </div>`;
+  } else {
+    qbox=`<div class="q-box">
+      <div class="q-label">Grupo de operadores</div>
+      <div class="q-val" style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;text-align:center">${q.pregunta}</div>
+    </div>`;
+  }
+
+  const optsHtml=q.opts.map((o,i)=>
+    `<button class="opt4" onclick="checkAns(${i},this)">${o}</button>`
+  ).join('');
+
+  document.getElementById('play-content').innerHTML=
+    hdr+qbox+
+    `<div class="opts4">${optsHtml}</div>
+     <div class="delta" id="delta"></div>
+     <div class="feedback" id="fb"></div>`;
+}
+
+function checkAns(idx,btn){
+  if(answered) return;
+  answered=true;
+  const q=questions[curQ];
+  const btns=document.querySelectorAll('.opt4');
+  btns.forEach(b=>b.disabled=true);
+  if(idx===q.a){
+    btn.classList.add('correct');
+    score+=100; updHdr();
+    setFb(true,'Correcto!','+100 puntos');
+    document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    btn.classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    score=Math.max(0,score-10); updHdr();
+    setFb(false,q.exp || ('Era: '+q.opts[q.a]),'-10 puntos');
+    document.getElementById('mc').innerHTML=M_ERR;
+  }
+  setTimeout(()=>{curQ++;renderQ();},2200);
+}
+
+function setFb(ok,msg,pts){
+  const fb=document.getElementById('fb');
+  fb.textContent=ok?'Correcto!':msg;
+  fb.className='feedback '+(ok?'fb-ok':'fb-err');
+  if(!ok){
+    // mostrar explicacion debajo
+    const d=document.createElement('div');
+    d.style.cssText='font-size:12px;color:#555;text-align:center;margin-top:4px;font-family:Nunito,sans-serif;';
+    d.textContent=msg;
+    fb.after(d);
+  }
+  document.getElementById('delta').textContent=pts;
+  document.getElementById('delta').className='delta '+(ok?'up':'down');
+}
+
+function showResult(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max=questions.length*100;
+  const pct=Math.round((score/max)*100);
+  const stars=pct>=90?'★★★':pct>=60?'★★':'★';
+  const msg=pct>=90?'Dominas los operadores de PSeInt!':pct>=60?'Muy bien! Repasa los que fallaste':'Revisa las tarjetas y vuelve a intentarlo';
+  document.getElementById('play-content').innerHTML=`
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
+      <div class="res-title">Juego terminado!</div>
+      <div class="res-stars" style="color:#eab308">${stars}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:10px;">${msg}</div>
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Correctas</span><span class="res-val">${Math.round(score/100)} de ${questions.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
+      <button class="rbtn sec" onclick="goTab('learn')">Repasar</button>
+    </div>`;
+  document.getElementById('hdr-score').textContent=score+' pts';
+}
+
+function rePlay(){
+  score=0; curQ=0; answered=false;
+  questions=shuffle([
+    ...shuffle(QS).slice(0,5),
+    ...shuffle(QR).slice(0,5),
+    ...shuffle(QG).slice(0,3),
+  ]);
+  updHdr(); renderQ();
+}
+</script>
+</html>
