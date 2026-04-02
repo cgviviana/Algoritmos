@@ -1,0 +1,474 @@
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+#app{border-radius:20px;overflow:hidden;background:#f8f4ff;font-family:'Nunito',sans-serif;}
+.hdr{background:#7c3aed;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;}
+.hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;}
+.tabs{display:flex;background:#ede9fe;}
+.tab{flex:1;padding:10px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;border:none;background:transparent;color:#7c3aed;border-bottom:3px solid transparent;transition:all .2s;font-family:'Nunito',sans-serif;}
+.tab.active{background:#fff;border-bottom:3px solid #7c3aed;}
+.panel{display:none;padding:18px;}
+.panel.active{display:block;}
+.slide{display:none;animation:fadeIn .35s ease;}
+.slide.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+.slide-card{border-radius:18px;padding:20px 18px;border:3px solid;margin-bottom:14px;}
+.sc-intro {background:#fefce8;border-color:#eab308;}
+.sc-string{background:#fdf4ff;border-color:#d946ef;}
+.sc-int   {background:#eff6ff;border-color:#3b82f6;}
+.sc-float {background:#fff7ed;border-color:#f97316;}
+.sc-bool  {background:#f0fdf4;border-color:#22c55e;}
+.slide-svg-wrap{display:flex;justify-content:center;margin-bottom:12px;}
+.slide-type{font-family:'Fredoka One',cursive;font-size:21px;text-align:center;margin-bottom:3px;}
+.sc-intro  .slide-type{color:#92400e;}
+.sc-string .slide-type{color:#a21caf;}
+.sc-int    .slide-type{color:#1d4ed8;}
+.sc-float  .slide-type{color:#c2410c;}
+.sc-bool   .slide-type{color:#15803d;}
+.slide-alias{text-align:center;font-size:12px;font-weight:700;color:#888;margin-bottom:10px;}
+.slide-rule{border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;margin-bottom:12px;line-height:1.5;}
+.sc-intro  .slide-rule{background:#fef08a;color:#78350f;}
+.sc-string .slide-rule{background:#f0abfc;color:#86198f;}
+.sc-int    .slide-rule{background:#bfdbfe;color:#1e40af;}
+.sc-float  .slide-rule{background:#fed7aa;color:#9a3412;}
+.sc-bool   .slide-rule{background:#bbf7d0;color:#166534;}
+.slide-desc{font-size:13px;color:#444;line-height:1.55;margin-bottom:12px;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.pill{font-size:12px;font-weight:700;padding:4px 11px;border-radius:999px;font-family:monospace;}
+.sc-intro  .pill{background:#fef08a;color:#78350f;}
+.sc-string .pill{background:#f0abfc;color:#86198f;}
+.sc-int    .pill{background:#bfdbfe;color:#1e40af;}
+.sc-float  .pill{background:#fed7aa;color:#9a3412;}
+.sc-bool   .pill{background:#bbf7d0;color:#166534;}
+.code-box{font-family:monospace;font-size:12px;background:rgba(0,0,0,0.06);border-radius:8px;padding:8px 10px;line-height:1.8;}
+.next-hint{text-align:center;font-size:12px;color:#a855f7;font-weight:700;margin-top:8px;}
+.progress-label{font-size:12px;color:#7c3aed;font-weight:700;text-align:center;margin-bottom:10px;background:#ede9fe;border-radius:999px;padding:5px 14px;}
+.carousel-nav{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.nav-btn{font-family:'Fredoka One',cursive;font-size:15px;padding:9px 20px;border-radius:12px;border:none;cursor:pointer;transition:transform .15s;}
+.nav-prev{background:#ede9fe;color:#7c3aed;box-shadow:0 3px 0 #c4b5fd;}
+.nav-next{background:#7c3aed;color:#fff;box-shadow:0 3px 0 #5b21b6;}
+.nav-btn:hover{transform:translateY(-2px);}
+.nav-btn:active{transform:translateY(1px);}
+.nav-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.dots{display:flex;gap:7px;}
+.dot{width:10px;height:10px;border-radius:50%;background:#d8b4fe;transition:all .2s;cursor:pointer;}
+.dot.active{background:#7c3aed;transform:scale(1.3);}
+.name-screen{background:#fff;border-radius:14px;border:1.5px solid #e9d5ff;padding:20px;text-align:center;}
+.name-title{font-family:'Fredoka One',cursive;font-size:20px;color:#7c3aed;margin-bottom:6px;}
+.name-sub{font-size:13px;color:#888;margin-bottom:14px;}
+.name-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid #d8b4fe;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#1e1b4b;margin-bottom:12px;}
+.name-input:focus{border-color:#7c3aed;}
+.start-btn{width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #5b21b6;transition:transform .1s;}
+.start-btn:hover{transform:translateY(-2px);}
+.quiz-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-counter{font-size:13px;font-weight:700;color:#888;}
+.q-score-lbl{font-family:'Fredoka One',cursive;font-size:16px;color:#7c3aed;}
+.prog-bar{background:#e9d5ff;border-radius:999px;height:8px;margin-bottom:14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:#7c3aed;transition:width .4s;}
+.mascot-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+.q-box{background:#fff;border-radius:14px;border:2px solid #e9d5ff;padding:16px;text-align:center;margin-bottom:14px;}
+.q-label{font-size:11px;font-weight:700;color:#a855f7;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.q-val{font-family:'Fredoka One',cursive;font-size:28px;color:#1e1b4b;margin-bottom:3px;}
+.q-hint{font-size:12px;color:#aaa;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.opt{padding:10px 6px;border-radius:12px;border:2.5px solid;font-family:'Fredoka One',cursive;font-size:13px;cursor:pointer;transition:transform .15s;box-shadow:0 3px 0 rgba(0,0,0,.07);display:flex;flex-direction:column;align-items:center;gap:4px;}
+.opt:hover:not(:disabled){transform:translateY(-2px);}
+.opt:active:not(:disabled){transform:translateY(1px);}
+.opt:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.o-s{border-color:#d946ef;color:#a21caf;background:#fdf4ff;}
+.o-i{border-color:#3b82f6;color:#1d4ed8;background:#eff6ff;}
+.o-f{border-color:#f97316;color:#c2410c;background:#fff7ed;}
+.o-b{border-color:#22c55e;color:#15803d;background:#f0fdf4;}
+.opt.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;transform:scale(1.04);}
+.opt.wrong{background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:24px;margin-bottom:4px;}
+.fb-ok{color:#16a34a;} .fb-err{color:#dc2626;}
+.delta{font-size:22px;font-weight:800;text-align:center;min-height:28px;margin-bottom:4px;}
+.delta.up{color:#16a34a;} .delta.down{color:#dc2626;}
+.result{text-align:center;padding:14px 8px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#7c3aed;margin-bottom:4px;}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{background:#fff;border-radius:14px;border:1.5px solid #e9d5ff;padding:16px;margin:12px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid #f3e8ff;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#7c3aed;}
+.res-lbl{color:#888;font-weight:600;}
+.res-val{font-weight:700;color:#1e1b4b;}
+.rbtn{background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #5b21b6;margin:4px;transition:transform .1s;}
+.rbtn:hover{transform:translateY(-2px);}
+.rbtn.sec{background:#ede9fe;color:#7c3aed;box-shadow:0 4px 0 #c4b5fd;}
+</style>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-title">Tipos de Datos</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-learn" onclick="goTab('learn')">Aprender</button>
+    <button class="tab" id="tab-play" onclick="goTab('play')">Jugar</button>
+  </div>
+
+  <div class="panel active" id="panel-learn">
+    <div class="progress-label" id="slide-label">Tarjeta 1 de 5 — Que es texto</div>
+
+    <!-- SLIDE 0: QUE ES TEXTO -->
+    <div class="slide active" id="slide-0">
+      <div class="slide-card sc-intro">
+        <div class="slide-svg-wrap">
+          <svg width="110" height="90" viewBox="0 0 110 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="10" width="94" height="70" rx="10" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/>
+            <rect x="18" y="24" width="55" height="7" rx="3.5" fill="#eab308" opacity=".7"/>
+            <rect x="18" y="37" width="74" height="7" rx="3.5" fill="#eab308" opacity=".5"/>
+            <rect x="18" y="50" width="62" height="7" rx="3.5" fill="#eab308" opacity=".5"/>
+            <rect x="18" y="63" width="40" height="7" rx="3.5" fill="#eab308" opacity=".4"/>
+            <circle cx="86" cy="24" r="14" fill="#eab308"/>
+            <text x="86" y="29" text-anchor="middle" font-family="Fredoka One,cursive" font-size="16" fill="#78350f">A</text>
+          </svg>
+        </div>
+        <div class="slide-type">Que es un Dato de Texto</div>
+        <div class="slide-alias">El tipo mas usado en programacion</div>
+        <div class="slide-rule">Un dato de texto es cualquier informacion formada por letras, palabras, frases o simbolos que queremos guardar como mensaje, no como numero.</div>
+        <div class="slide-desc">Cuando un programa guarda un nombre, una direccion, un mensaje de chat o un codigo como "ABC-01", esta usando un dato de tipo texto. No sirve para hacer sumas, solo para leer y mostrar informacion.</div>
+        <div class="pills">
+          <span class="pill">Nombre</span>
+          <span class="pill">Direccion</span>
+          <span class="pill">Mensaje</span>
+          <span class="pill">Codigo</span>
+          <span class="pill">Color</span>
+        </div>
+        <div class="slide-rule">Ejemplos del mundo real: el nombre de un estudiante, la direccion de una tienda, el color favorito de un usuario, un numero de placa como "ABC-123".</div>
+        <div class="next-hint">En la siguiente tarjeta veras como se escribe en codigo...</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 1: STRING -->
+    <div class="slide" id="slide-1">
+      <div class="slide-card sc-string">
+        <div class="slide-svg-wrap">
+          <svg width="120" height="90" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="15" width="108" height="60" rx="10" fill="#f0abfc" stroke="#d946ef" stroke-width="2.5"/>
+            <text x="18" y="38" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">"</text>
+            <text x="28" y="38" font-family="monospace" font-size="13" fill="#86198f">Hola</text>
+            <text x="68" y="38" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">"</text>
+            <line x1="14" y1="48" x2="106" y2="48" stroke="#d946ef" stroke-width="1" opacity=".4"/>
+            <text x="18" y="64" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">'</text>
+            <text x="26" y="64" font-family="monospace" font-size="13" fill="#86198f">Bogota</text>
+            <text x="80" y="64" font-family="monospace" font-size="13" fill="#86198f" font-weight="bold">'</text>
+            <rect x="86" y="5" width="26" height="20" rx="5" fill="#d946ef"/>
+            <text x="99" y="19" text-anchor="middle" font-family="Fredoka One,cursive" font-size="13" fill="#fff">str</text>
+          </svg>
+        </div>
+        <div class="slide-type">String — Cadena de texto</div>
+        <div class="slide-alias">Tambien: char · varchar · texto · str</div>
+        <div class="slide-rule">Regla: siempre va entre comillas " " o ' '. Si tiene comillas es String, sin importar que haya adentro.</div>
+        <div class="slide-desc">Asi se escribe un dato de texto en codigo. Las comillas le dicen al computador: esto es texto, no lo calcules. Incluso un numero entre comillas se convierte en texto.</div>
+        <div class="pills">
+          <span class="pill">"Hola"</span><span class="pill">"Colombia"</span><span class="pill">'Gato'</span><span class="pill">"abc123"</span><span class="pill">"2024"</span><span class="pill">"true"</span>
+        </div>
+        <div class="code-box">
+          nombre = <span style="color:#a21caf">"Sofia"</span><br>
+          ciudad = <span style="color:#a21caf">'Bogota'</span><br>
+          placa = <span style="color:#a21caf">"ABC-123"</span><br>
+          num_texto = <span style="color:#a21caf">"42"</span> <span style="color:#888">← texto, no numero!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: INT -->
+    <div class="slide" id="slide-2">
+      <div class="slide-card sc-int">
+        <div class="slide-svg-wrap">
+          <svg width="110" height="90" viewBox="0 0 110 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="12" width="90" height="66" rx="10" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2.5"/>
+            <text x="55" y="58" text-anchor="middle" font-family="Fredoka One,cursive" font-size="42" fill="#1d4ed8">42</text>
+            <rect x="10" y="12" width="90" height="20" rx="10" fill="#3b82f6"/>
+            <rect x="10" y="22" width="90" height="10" rx="0" fill="#3b82f6"/>
+            <text x="55" y="27" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#fff">int / integer</text>
+          </svg>
+        </div>
+        <div class="slide-type">Integer — Numero Entero</div>
+        <div class="slide-alias">Tambien: int · long · short · byte</div>
+        <div class="slide-rule">Regla: numero completo, sin punto decimal y sin comillas. Puede ser positivo, negativo o cero.</div>
+        <div class="slide-desc">Se usa cuando necesitamos contar cosas exactas: edades, posiciones, cantidades, anos. No tiene parte decimal porque representa unidades completas.</div>
+        <div class="pills">
+          <span class="pill">5</span><span class="pill">-3</span><span class="pill">100</span><span class="pill">0</span><span class="pill">-999</span><span class="pill">2024</span>
+        </div>
+        <div class="code-box">
+          edad = <span style="color:#1d4ed8">25</span><br>
+          temperatura = <span style="color:#1d4ed8">-10</span><br>
+          puntaje = <span style="color:#1d4ed8">500</span><br>
+          anio = <span style="color:#1d4ed8">2024</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: FLOAT -->
+    <div class="slide" id="slide-3">
+      <div class="slide-card sc-float">
+        <div class="slide-svg-wrap">
+          <svg width="120" height="90" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="12" width="104" height="66" rx="10" fill="#fed7aa" stroke="#f97316" stroke-width="2.5"/>
+            <text x="60" y="55" text-anchor="middle" font-family="Fredoka One,cursive" font-size="34" fill="#c2410c">3.14</text>
+            <circle cx="36" cy="70" r="5" fill="#f97316" opacity=".5"/>
+            <circle cx="52" cy="70" r="5" fill="#f97316" opacity=".5"/>
+            <circle cx="68" cy="70" r="5" fill="#f97316" opacity=".5"/>
+            <rect x="8" y="12" width="104" height="20" rx="10" fill="#f97316"/>
+            <rect x="8" y="22" width="104" height="10" rx="0" fill="#f97316"/>
+            <text x="60" y="27" text-anchor="middle" font-family="Fredoka One,cursive" font-size="12" fill="#fff">float / double / real</text>
+          </svg>
+        </div>
+        <div class="slide-type">Float / Double — Numero Real</div>
+        <div class="slide-alias">Tambien: float · double · decimal · real</div>
+        <div class="slide-rule">Regla: tiene un punto (.) decimal y sin comillas. Ojo! 1.0 tambien es float aunque el decimal sea cero.</div>
+        <div class="slide-desc">Se usa para medidas, precios, promedios y cualquier valor que necesite decimales. Double tiene mas precision que float (mas decimales exactos).</div>
+        <div class="pills">
+          <span class="pill">3.14</span><span class="pill">-0.5</span><span class="pill">9.99</span><span class="pill">1.0</span><span class="pill">100.75</span><span class="pill">-2.8</span>
+        </div>
+        <div class="code-box">
+          precio = <span style="color:#c2410c">19.99</span><br>
+          promedio = <span style="color:#c2410c">4.5</span><br>
+          pi = <span style="color:#c2410c">3.14159</span><br>
+          altura = <span style="color:#c2410c">1.75</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: BOOL -->
+    <div class="slide" id="slide-4">
+      <div class="slide-card sc-bool">
+        <div class="slide-svg-wrap">
+          <svg width="120" height="90" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="20" width="48" height="50" rx="10" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/>
+            <rect x="64" y="20" width="48" height="50" rx="10" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/>
+            <text x="32" y="52" text-anchor="middle" font-family="Fredoka One,cursive" font-size="15" fill="#15803d">true</text>
+            <text x="88" y="52" text-anchor="middle" font-family="Fredoka One,cursive" font-size="15" fill="#dc2626">false</text>
+            <polyline points="18,48 26,56 46,36" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="74" y1="36" x2="102" y2="64" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+            <line x1="102" y1="36" x2="74" y2="64" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+            <text x="60" y="14" text-anchor="middle" font-family="Fredoka One,cursive" font-size="11" fill="#15803d">bool</text>
+          </svg>
+        </div>
+        <div class="slide-type">Boolean — Booleano</div>
+        <div class="slide-alias">Tambien: bool · boolean · logico · bit</div>
+        <div class="slide-rule">Regla: SOLO puede ser true (verdadero) o false (falso). Sin comillas, sin numeros. Solo esas dos palabras.</div>
+        <div class="slide-desc">Como un interruptor de luz: solo tiene dos estados. Se usa para condiciones, permisos y estados como activo/inactivo, si/no, encendido/apagado.</div>
+        <div class="pills">
+          <span class="pill">true</span><span class="pill">false</span>
+        </div>
+        <div class="code-box">
+          esMayor = <span style="color:#15803d">true</span><br>
+          tieneDescuento = <span style="color:#15803d">false</span><br>
+          estaActivo = <span style="color:#15803d">true</span><br>
+          <span style="color:#888">"true" con comillas → es String, no Boolean</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-nav">
+      <button class="nav-btn nav-prev" id="btn-prev" onclick="moveSlide(-1)" disabled>Anterior</button>
+      <div class="dots" id="dots">
+        <div class="dot active" onclick="goSlide(0)"></div>
+        <div class="dot" onclick="goSlide(1)"></div>
+        <div class="dot" onclick="goSlide(2)"></div>
+        <div class="dot" onclick="goSlide(3)"></div>
+        <div class="dot" onclick="goSlide(4)"></div>
+      </div>
+      <button class="nav-btn nav-next" id="btn-next" onclick="moveSlide(1)">Siguiente</button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-play">
+    <div id="play-content"></div>
+  </div>
+</div>
+
+<script>
+let curSlide=0,totalSlides=5;
+let playerName='',score=0,curQ=0,questions=[],answered=false;
+const SLIDE_NAMES=['Que es texto','String (cadena)','Integer (entero)','Float (real)','Boolean'];
+
+function goTab(t){
+  ['learn','play'].forEach(x=>{
+    document.getElementById('tab-'+x).className='tab'+(t===x?' active':'');
+    document.getElementById('panel-'+x).className='panel'+(t===x?' active':'');
+  });
+  if(t==='play') showNameScreen();
+}
+
+function moveSlide(dir){goSlide(curSlide+dir);}
+function goSlide(n){
+  if(n<0||n>=totalSlides)return;
+  document.getElementById('slide-'+curSlide).classList.remove('active');
+  document.querySelectorAll('.dot')[curSlide].classList.remove('active');
+  curSlide=n;
+  document.getElementById('slide-'+curSlide).classList.add('active');
+  document.querySelectorAll('.dot')[curSlide].classList.add('active');
+  document.getElementById('slide-label').textContent='Tarjeta '+(curSlide+1)+' de '+totalSlides+' — '+SLIDE_NAMES[curSlide];
+  document.getElementById('btn-prev').disabled=curSlide===0;
+  const nb=document.getElementById('btn-next');
+  if(curSlide===totalSlides-1){nb.textContent='A jugar!';nb.onclick=()=>goTab('play');}
+  else{nb.textContent='Siguiente';nb.onclick=()=>moveSlide(1);}
+}
+
+const SVG_MASCOT_OK=`<svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const SVG_MASCOT_ERR=`<svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const SVG_MASCOT_IDLE=`<svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg"><circle cx="35" cy="35" r="32" fill="#ede9fe" stroke="#7c3aed" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#7c3aed"/><circle cx="46" cy="30" r="4" fill="#7c3aed"/><path d="M24 46 Q35 52 46 46" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="25" cy="30" r="1.5" fill="#fff"/><circle cx="47" cy="30" r="1.5" fill="#fff"/></svg>`;
+const SVG_MASCOT_WIN=`<svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(8,5) scale(0.5)" fill="#eab308"/></svg>`;
+
+const SVG_OPTS={
+  s:`<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="6" width="28" height="20" rx="5" fill="#f0abfc" stroke="#d946ef" stroke-width="1.5"/><text x="7" y="14" font-family="monospace" font-size="8" fill="#86198f" font-weight="bold">"</text><text x="11" y="14" font-family="monospace" font-size="8" fill="#86198f">ab</text><text x="22" y="14" font-family="monospace" font-size="8" fill="#86198f" font-weight="bold">"</text><rect x="6" y="17" width="14" height="3" rx="1.5" fill="#d946ef" opacity=".5"/><rect x="6" y="22" width="20" height="3" rx="1.5" fill="#d946ef" opacity=".3"/></svg>`,
+  i:`<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="6" width="28" height="20" rx="5" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/><text x="16" y="21" text-anchor="middle" font-family="Fredoka One,cursive" font-size="16" fill="#1d4ed8">42</text></svg>`,
+  f:`<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="6" width="28" height="20" rx="5" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"/><text x="16" y="21" text-anchor="middle" font-family="Fredoka One,cursive" font-size="13" fill="#c2410c">3.14</text></svg>`,
+  b:`<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="6" width="12" height="20" rx="4" fill="#bbf7d0" stroke="#22c55e" stroke-width="1.5"/><rect x="18" y="6" width="12" height="20" rx="4" fill="#fecaca" stroke="#ef4444" stroke-width="1.5"/><polyline points="5,17 8,21 14,13" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="21" y1="13" x2="27" y2="21" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><line x1="27" y1="13" x2="21" y2="21" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/></svg>`,
+};
+
+const OPTS=[
+  {k:'s',label:'String',sub:'Cadena / texto',cls:'o-s'},
+  {k:'i',label:'Entero',sub:'int / integer',cls:'o-i'},
+  {k:'f',label:'Real',sub:'float / double',cls:'o-f'},
+  {k:'b',label:'Boolean',sub:'true / false',cls:'o-b'},
+];
+
+const QS=[
+  {v:'"Hola"',a:'s',h:'Tiene comillas'},
+  {v:'42',a:'i',h:'Sin punto ni comillas'},
+  {v:'3.14',a:'f',h:'Tiene punto decimal'},
+  {v:'true',a:'b',h:'true o false'},
+  {v:'"Colombia"',a:'s',h:'Entre comillas'},
+  {v:'-7',a:'i',h:'Negativo sin punto'},
+  {v:'false',a:'b',h:'Valor booleano'},
+  {v:'9.99',a:'f',h:'Tiene decimales'},
+  {v:'"abc123"',a:'s',h:'Comillas = string siempre'},
+  {v:'0',a:'i',h:'Cero sin punto'},
+  {v:'1.0',a:'f',h:'Punto decimal aunque sea .0'},
+  {v:'"true"',a:'s',h:'Comillas = string, no boolean'},
+  {v:'100',a:'i',h:'Sin punto ni comillas'},
+  {v:'-0.5',a:'f',h:'Decimal negativo'},
+  {v:'"2024"',a:'s',h:'Comillas = string'},
+  {v:'19.75',a:'f',h:'Numero con decimales'},
+  {v:'-50',a:'i',h:'Entero negativo'},
+  {v:'"Hola mundo"',a:'s',h:'Frase = string'},
+  {v:'0.0',a:'f',h:'Punto decimal = float'},
+  {v:'false',a:'b',h:'Solo true o false'},
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
+function showNameScreen(){
+  document.getElementById('play-content').innerHTML=`
+    <div class="name-screen">
+      <div style="display:flex;justify-content:center;margin-bottom:12px">${SVG_MASCOT_IDLE}</div>
+      <div class="name-title">Bienvenido al quiz!</div>
+      <div class="name-sub">Escribe tu nombre completo para comenzar.<br><b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b></div>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="50">
+      <button class="start-btn" onclick="startQuiz()">Comenzar!</button>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
+}
+
+function startQuiz(){
+  const inp=document.getElementById('name-inp');
+  const n=inp?inp.value.trim():'';
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='Escribe tu nombre primero!';return;}
+  playerName=n;score=0;curQ=0;answered=false;
+  questions=shuffle(QS).slice(0,12);
+  updHdr();renderQ();
+}
+
+function updHdr(){
+  document.getElementById('hdr-score').textContent=score+' pts';
+}
+
+function renderQ(){
+  if(curQ>=questions.length){showResult();return;}
+  const q=questions[curQ];
+  const pct=Math.round((curQ/questions.length)*100);
+  answered=false;
+  const optsHtml=OPTS.map(o=>`
+    <button class="opt ${o.cls}" onclick="checkAns('${o.k}',this)">
+      ${SVG_OPTS[o.k]}
+      <span style="font-size:14px">${o.label}</span>
+      <small style="font-weight:400;font-size:11px;color:inherit;opacity:.8">${o.sub}</small>
+    </button>`).join('');
+  document.getElementById('play-content').innerHTML=`
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${SVG_MASCOT_IDLE}</div>
+    <div class="q-box">
+      <div class="q-label">Que tipo de dato es?</div>
+      <div class="q-val">${q.v}</div>
+      <div class="q-hint">${q.h}</div>
+    </div>
+    <div class="opts">${optsHtml}</div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>`;
+}
+
+function checkAns(ans,btn){
+  if(answered)return;
+  answered=true;
+  const q=questions[curQ];
+  const fb=document.getElementById('fb');
+  const mc=document.getElementById('mc');
+  const delta=document.getElementById('delta');
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  if(ans===q.a){
+    btn.classList.add('correct');
+    score+=100;updHdr();
+    fb.textContent='Correcto!';fb.className='feedback fb-ok';
+    delta.textContent='+100 puntos';delta.className='delta up';
+    mc.innerHTML=SVG_MASCOT_OK;
+  } else {
+    btn.classList.add('wrong');
+    score=Math.max(0,score-10);updHdr();
+    const correct=OPTS.find(o=>o.k===q.a);
+    fb.textContent='Era: '+correct.label;fb.className='feedback fb-err';
+    delta.textContent='-10 puntos';delta.className='delta down';
+    mc.innerHTML=SVG_MASCOT_ERR;
+    document.querySelectorAll('.opt').forEach(b=>{
+      if(b.classList.contains('o-'+q.a))b.classList.add('correct');
+    });
+  }
+  setTimeout(()=>{curQ++;renderQ();},1900);
+}
+
+function showResult(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max=questions.length*100;
+  const pct=Math.round((score/max)*100);
+  const stars=pct>=90?'★★★':pct>=60?'★★':'★';
+  const msg=pct>=90?'Eres un experto en tipos de datos!':pct>=60?'Muy bien! Sigue practicando':'No te rindas! Repasa y vuelve a intentarlo';
+  document.getElementById('play-content').innerHTML=`
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${SVG_MASCOT_WIN}</div>
+      <div class="res-title">Juego terminado!</div>
+      <div class="res-stars" style="color:#eab308">${stars}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:10px;">${msg}</div>
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Correctas</span><span class="res-val">${Math.round(score/100)} de ${questions.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
+      <button class="rbtn sec" onclick="goTab('learn')">Repasar</button>
+    </div>`;
+  document.getElementById('hdr-score').textContent=score+' pts';
+}
+
+function rePlay(){
+  score=0;curQ=0;answered=false;
+  questions=shuffle(QS).slice(0,12);
+  updHdr();renderQ();
+}
+</script>
